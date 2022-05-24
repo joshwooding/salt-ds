@@ -86,6 +86,10 @@ export interface DropdownProps<
    */
   ListProps?: Partial<ListProps<Item, Variant>>;
   /**
+   * Props to be applied on the window component
+   */
+  WindowProps?: Partial<WindowProps>;
+  /**
    * Object that houses ADA-related props.
    *
    * @property {bool} virtualized Set to `true` to boost browser performance
@@ -201,6 +205,7 @@ export const Dropdown = forwardRef(function Dropdown<
     children,
     container,
     disablePortal,
+    WindowProps,
     ...restProps
   }: DropdownProps<Item, Variant>,
   ref: ForwardedRef<HTMLDivElement>
@@ -290,6 +295,7 @@ export const Dropdown = forwardRef(function Dropdown<
               maxHeight: maxListHeight ?? "",
             }}
             ref={floating}
+            {...WindowProps}
           >
             <ListStateContext.Provider value={listContext}>
               <ListBase<Item>
