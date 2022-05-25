@@ -6,7 +6,7 @@ import { DoubleChevronLeftIcon } from "@jpmorganchase/uitk-icons";
 import {
   ParentChildLayout,
   StackedViewElement,
-  useIsStacked,
+  useChangeView,
   Tabstrip,
   Tab,
   Avatar,
@@ -164,7 +164,7 @@ const Responsive: ComponentStory<typeof ParentChildLayout> = (args) => {
 
   const [currentView, setCurrentView] = useState<StackedViewElement>("parent");
 
-  const isStacked = useIsStacked(stackedAtBreakpoint);
+  const isStacked = useChangeView(stackedAtBreakpoint);
 
   const handleParent = () => {
     setCurrentView("parent");
