@@ -1,4 +1,10 @@
 import {
+  flip,
+  limitShift,
+  shift,
+  size,
+} from "@floating-ui/react-dom-interactions";
+import {
   Portal,
   TooltipContext,
   TooltipContextProps,
@@ -6,6 +12,7 @@ import {
   useFloatingUI,
   useForkRef,
   Window,
+  WindowProps,
 } from "@jpmorganchase/uitk-core";
 import {
   HTMLAttributes,
@@ -17,13 +24,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import {
-  flip,
-  limitShift,
-  shift,
-  size,
-} from "@floating-ui/react-dom-interactions";
 import { Input, InputProps } from "../../input";
 import {
   ListBase,
@@ -59,6 +59,7 @@ export type BaseComboBoxProps<
     ListItem?: ReactNode;
     ListProps?: Partial<ListProps<Item, Variant>>;
     Tooltip?: TooltipContextProps["Tooltip"];
+    WindowProps?: Partial<WindowProps>;
     allowFreeText?: boolean;
     disabled?: boolean;
     getFilterRegex?: GetFilterRegex;
@@ -87,12 +88,13 @@ export interface DefaultComboBoxProps<Item>
   stringToItem?: (value?: string) => Item | null | undefined;
 }
 
-export function DefaultComboBox<Item>(
+export const DefaultComboBox = function DefaultComboBox<Item>(
   props: DefaultComboBoxProps<Item>
 ): ReactNode {
   const {
     ListItem,
     Tooltip,
+    WindowProps = {},
     tooltipEnterDelay,
     tooltipLeaveDelay,
     tooltipPlacement,
@@ -188,6 +190,7 @@ export function DefaultComboBox<Item>(
               position: strategy,
               maxHeight: maxListHeight ?? "",
             }}
+            {...WindowProps}
             ref={floating}
           >
             <TooltipContext.Provider value={tooltipContext}>
@@ -212,4 +215,4 @@ export function DefaultComboBox<Item>(
       )}
     </>
   );
-}
+};
