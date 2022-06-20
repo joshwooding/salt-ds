@@ -38,6 +38,10 @@
   background-color: var(--zebra-color);
 }
 
+.uitkGridBaseCell-secondary {
+  background-color: var(--background-color-secondary);
+}
+
 .uitkGridBaseCell-allEditable {
   border-width: 0 0 1px 1px;
 }

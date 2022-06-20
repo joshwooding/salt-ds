@@ -2,6 +2,7 @@ import {
   CellSelectionMode,
   ColumnDefinition,
   ColumnGroupDefinition,
+  GridBackgroundVariant,
   GridModel,
   RowSelectionMode,
 } from "./model";
@@ -24,7 +25,7 @@ export interface GridData<T> {
   showCheckboxes?: boolean;
   rowSelectionMode?: RowSelectionMode;
   cellSelectionMode?: CellSelectionMode;
-  isZebra?: boolean;
+  backgroundVariant?: GridBackgroundVariant;
   data: T[];
 }
 
@@ -48,7 +49,7 @@ export function Grid<T>(props: GridProps<T>) {
     model.setRowSelectionMode(rowSelectionMode);
     model.setCellSelectionMode(cellSelectionMode);
     model.setOnVisibleRowRangeChange(props.onVisibleRowRangeChanged);
-    model.setIsZebra(props.isZebra);
+    model.setBackgroundVariant(props.backgroundVariant);
   });
 
   return (

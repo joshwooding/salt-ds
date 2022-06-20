@@ -3,7 +3,7 @@ import { GridBase } from "../grid/components";
 import { GridContext } from "../grid/GridContext";
 import { DataGridContext } from "./DataGridContext";
 import {
-  ColDefNext,
+  ColDef,
   DataGridModelEvents,
   DataGridModel,
   GroupRowNode,
@@ -12,6 +12,7 @@ import {
   SortFn,
 } from "./DataGridModel";
 import { SortInfo } from "./sort";
+import { ColumnPinType, GridBackgroundVariant } from "../grid";
 
 export interface DataGridRowGroupCellComponentProps<
   TRowData,
@@ -37,6 +38,7 @@ export interface DataGridRowGroupSettings<TRowData> {
   showTreeLines?: boolean;
   title?: string;
   width?: number;
+  pinned?: ColumnPinType;
 }
 
 // Filtering
@@ -51,12 +53,24 @@ export interface DataGridFilterSettings<TRowData> {
   filterFn: (rowData: TRowData) => boolean;
 }
 
+// Row styling
+export type DataGridRowDividerVariant = "primary" | "secondary" | "none";
+
+export interface DataGridRowSettings<T> {
+  key: string;
+  divider?: DataGridRowDividerVariant;
+}
+
+// Grid styling
+
 export interface DataGridProps<TRowData = any> {
   className?: string;
+  rowDividers?: DataGridRowDividerVariant;
+  backgroundVariant?: GridBackgroundVariant;
 
   rowKeyGetter: RowKeyGetterFn<TRowData>;
   data: TRowData[];
-  columnDefinitions: ColDefNext<TRowData>[];
+  columnDefinitions: ColDef<TRowData>[];
   // TODO make this a component?
   leafNodeGroupNameField?: keyof TRowData; // Which field to show in the group/tree column for leaf nodes
   showTreeLines?: boolean;
@@ -91,6 +105,7 @@ export const DataGrid = function <TRowData = any>(
     filterFn,
     sortFn,
     sortSettings,
+    backgroundVariant,
   } = props;
 
   const [dataGridModel] = useState<DataGridModel<TRowData>>(
@@ -118,6 +133,7 @@ export const DataGrid = function <TRowData = any>(
   dataGridModel.setFilterFn(filterFn);
   dataGridModel.setSortFn(sortFn);
   dataGridModel.setSortSettings(sortSettings);
+  dataGridModel.setBackgroundVariant(backgroundVariant);
 
   return (
     <DataGridContext.Provider value={contextValue}>

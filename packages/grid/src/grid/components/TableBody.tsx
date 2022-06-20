@@ -14,6 +14,7 @@ export function TableBody<T>(props: TableBodyProps<T>) {
   const { model } = useGridContext();
   const rowSelectionMode = model.useRowSelectionMode();
   const cellSelectionMode = model.useCellSelectionMode();
+  const backgroundVariant = model.useBackgroundVariant();
   const isRangeSelectionInProgress =
     model.cellSelection.useIsRangeSelectionInProgress();
 
@@ -125,6 +126,7 @@ export function TableBody<T>(props: TableBodyProps<T>) {
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             columns={columns}
+            backgroundVariant={backgroundVariant}
           />
         );
       })}

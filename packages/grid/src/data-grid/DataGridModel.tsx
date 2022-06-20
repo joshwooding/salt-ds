@@ -7,15 +7,17 @@ import {
 } from "rxjs";
 import {
   ColumnDefinition,
+  ColumnPinType,
   createHandler,
   createHook,
+  GridBackgroundVariant,
   GridModel,
   RowKeyGetter,
 } from "../grid";
 import React from "react";
 import { TextCellValue } from "./TextCellValue";
 import { ColumnHeaderValue } from "./ColumnHeaderValue";
-import { GroupCellValue } from "./row-grouping/GroupCellValue";
+import { GroupCellValue } from "./row-grouping";
 import {
   DataGridRowGroupLevelSettings,
   DataGridRowGroupSettings,
@@ -27,12 +29,12 @@ export type ValueGetterFn<TRowData, TCellValue> = (
 ) => TCellValue;
 export type RowKeyGetterFn<TRowData> = (rowData: TRowData) => string;
 export type HeaderValueGetterFn<TColumnData, THeaderValue = any> = (
-  column: ColDefNext<TColumnData>
+  column: ColDef<TColumnData>
 ) => THeaderValue;
 
 export type ColFilterFn<TRowData> = (rowData: TRowData) => boolean;
 
-export interface ColDefNext<
+export interface ColDef<
   TRowData = any,
   TColumnData = any,
   THeaderValue = TColumnData,
@@ -46,7 +48,7 @@ export interface ColDefNext<
   data?: TColumnData;
   headerValueGetter?: HeaderValueGetterFn<TColumnData, THeaderValue>;
   headerComponent?: React.ComponentType<THeaderValue>;
-  pinned?: "left" | "right";
+  pinned?: ColumnPinType;
   cellValueGetter?: ValueGetterFn<TRowData, TCellValue>;
   cellComponent?: React.ComponentType<TCellValue>;
 }
@@ -129,7 +131,7 @@ export class DataGridColumn<
   THeaderValue = TColumnData,
   TCellValue = any
 > {
-  public readonly definition: ColDefNext<
+  public readonly definition: ColDef<
     TRowData,
     TColumnData,
     THeaderValue,
@@ -148,7 +150,7 @@ export class DataGridColumn<
   public readonly setSortPriority: (sortPriority: number | undefined) => void;
 
   public constructor(
-    definition: ColDefNext<TRowData, TColumnData, THeaderValue, TCellValue>
+    definition: ColDef<TRowData, TColumnData, THeaderValue, TCellValue>
   ) {
     this.definition = definition;
     this.sortDirection$ = new BehaviorSubject<SortDirection | undefined>(
@@ -188,7 +190,7 @@ export interface DataGridModelEvents<TRowData> {
 export interface DataGridModelOptions<TRowData> {
   rowKeyGetter: RowKeyGetterFn<TRowData>;
   data?: TRowData[];
-  columnDefinitions?: ColDefNext<TRowData>[];
+  columnDefinitions?: ColDef<TRowData>[];
   events?: DataGridModelEvents<TRowData>;
 }
 
@@ -278,7 +280,7 @@ export class DataGridModel<TRowData = any> {
   private readonly rowKeyGetter: RowKeyGetterFn<TRowData>;
   private readonly data$: BehaviorSubject<TRowData[]>;
 
-  private readonly columnDefinitions$: BehaviorSubject<ColDefNext<TRowData>[]>;
+  private readonly columnDefinitions$: BehaviorSubject<ColDef<TRowData>[]>;
   private readonly leafRows$: BehaviorSubject<LeafRowNode<TRowData>[]>;
   private readonly filteredLeafRows$: BehaviorSubject<LeafRowNode<TRowData>[]>; // Filtered but not sorted
   private readonly sortedLeafRows$: BehaviorSubject<LeafRowNode<TRowData>[]>; // Filtered and sorted
@@ -303,10 +305,13 @@ export class DataGridModel<TRowData = any> {
   private readonly leafNodeGroupNameField$: BehaviorSubject<
     undefined | keyof TRowData
   >;
+  private readonly backgroundVariant$: BehaviorSubject<
+    GridBackgroundVariant | undefined
+  >;
 
   public readonly gridModel: GridModel<RowNode<TRowData>>;
   public readonly setRowData: (data: TRowData[]) => void;
-  public readonly setColumnDefs: (columnDefs: ColDefNext<TRowData>[]) => void;
+  public readonly setColumnDefs: (columnDefs: ColDef<TRowData>[]) => void;
   // public readonly setRowGroup: (rowGroup: string[] | undefined) => void;
   public readonly setRowGrouping: (
     rowGrouping: DataGridRowGroupSettings<TRowData> | undefined
@@ -327,13 +332,17 @@ export class DataGridModel<TRowData = any> {
     sortSettings: SortInfo[] | undefined
   ) => void;
 
+  public readonly setBackgroundVariant: (
+    backgroundVariant?: GridBackgroundVariant
+  ) => void;
+
   public readonly expandCollapseNode: (event: ExpandCollapseEvent) => void;
 
   public constructor(options: DataGridModelOptions<TRowData>) {
     this.rowKeyGetter = options.rowKeyGetter;
     this.data$ = new BehaviorSubject<TRowData[]>(options.data || []);
     this.setRowData = createHandler(this.data$);
-    this.columnDefinitions$ = new BehaviorSubject<ColDefNext<TRowData>[]>(
+    this.columnDefinitions$ = new BehaviorSubject<ColDef<TRowData>[]>(
       options.columnDefinitions || []
     );
     this.setColumnDefs = createHandler(this.columnDefinitions$);
@@ -383,6 +392,7 @@ export class DataGridModel<TRowData = any> {
             title: rowGrouping.title,
             width: rowGrouping.width,
             cellComponent: GroupCellValue,
+            pinned: rowGrouping.pinned,
           });
           columns.unshift(groupColumn);
         }
@@ -523,6 +533,14 @@ export class DataGridModel<TRowData = any> {
 
     this.visibleRows$.subscribe((visibleRows) => {
       this.gridModel.setData(visibleRows);
+    });
+
+    this.backgroundVariant$ = new BehaviorSubject<
+      GridBackgroundVariant | undefined
+    >(undefined);
+    this.setBackgroundVariant = createHandler(this.backgroundVariant$);
+    this.backgroundVariant$.subscribe((backgroundVariant) => {
+      this.gridModel.setBackgroundVariant(backgroundVariant);
     });
   }
 }

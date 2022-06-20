@@ -164,7 +164,7 @@ const SingleRowSelectionGridTemplate: Story = () => {
       rowSelectionMode={"single"}
       showCheckboxes={true}
       getKey={getKey}
-      isZebra={true}
+      backgroundVariant={"zebra"}
     />
   );
 };
@@ -179,7 +179,7 @@ const SingleCellSelectionGridTemplate: Story = () => {
       cellSelectionMode={"single"}
       showCheckboxes={true}
       getKey={getKey}
-      isZebra={true}
+      backgroundVariant={"zebra"}
     />
   );
 };
@@ -193,7 +193,7 @@ const MultiCellSelectionGridTemplate: Story = () => {
       rowSelectionMode={"none"}
       cellSelectionMode={"multi"}
       getKey={getKey}
-      isZebra={true}
+      backgroundVariant={"zebra"}
     />
   );
 };

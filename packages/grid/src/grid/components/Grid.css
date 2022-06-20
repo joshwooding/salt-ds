@@ -28,6 +28,7 @@
 }
 
 .uitk-light .uitkGrid {
+  --background-color-secondary: #F2F4F6;
   --cell-border-color: #d9dde3;
   --cell-background-color: var(--uitk-color-white);
   --zebra-color: #eaedef;
@@ -48,6 +49,7 @@
 }
 
 .uitk-dark .uitkGrid {
+  --background-color-secondary: #2F3136;
   --cell-border-color: #3B3F46;
   --cell-background-color: var(--uitk-color-grey-800);
   --zebra-color: #2F3136;

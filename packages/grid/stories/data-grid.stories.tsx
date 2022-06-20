@@ -1,6 +1,6 @@
 import { Story } from "@storybook/react";
 import {
-  ColDefNext,
+  ColDef,
   DataGrid,
   DataGridRowGroupCellComponentProps,
   DataGridRowGroupSettings,
@@ -93,7 +93,7 @@ for (let i = 0; i < 100; ++i) {
   blotter.addRecord(record);
 }
 
-const blotterColumnDefinitions: ColDefNext<BlotterRecord>[] = [
+const blotterColumnDefinitions: ColDef<BlotterRecord>[] = [
   {
     key: "identifier",
     type: "text",

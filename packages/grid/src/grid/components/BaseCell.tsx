@@ -17,6 +17,7 @@ export interface BaseCellProps<T = any>
   isSelected?: boolean;
   isFocused?: boolean;
   isAlternate?: boolean;
+  isSecondaryBackground?: boolean;
   className?: string;
   style?: CSSProperties;
 }
@@ -34,6 +35,7 @@ export const BaseCell: FC<BaseCellProps> = function BaseCell(props) {
     isSelected,
     isFocused,
     isAlternate,
+    isSecondaryBackground,
     className,
     style,
     children,
@@ -59,8 +61,14 @@ export const BaseCell: FC<BaseCellProps> = function BaseCell(props) {
           [withBaseName("hover")]: isHoverOverRow,
           [withBaseName("selectedRow")]: isSelectedRow,
           [withBaseName("selectedCell")]: isSelected,
+          // TODO apply zebra and secondary to rows (or to the table)
           [withBaseName("zebra")]:
             isAlternate && !isSelected && !isSelectedRow && !isHoverOverRow, // TODO css?
+          [withBaseName("secondary")]:
+            isSecondaryBackground &&
+            !isSelected &&
+            !isSelectedRow &&
+            !isHoverOverRow,
           [withBaseName("editable")]: !isAllEditable && isEditable,
           [withBaseName("allEditable")]: isAllEditable && column.index !== 0,
         },

@@ -1,4 +1,4 @@
-import { Column, ColumnDefinition, Row } from "../model";
+import { Column, ColumnDefinition, GridBackgroundVariant, Row } from "../model";
 import { memo, MouseEventHandler } from "react";
 import "./TableRow.css";
 import { BaseCell } from "./BaseCell";
@@ -11,6 +11,7 @@ export interface TableRowProps<T = any> {
   columns: Column<T>[];
   onMouseEnter: MouseEventHandler<HTMLTableRowElement>;
   onMouseLeave: MouseEventHandler<HTMLTableRowElement>;
+  backgroundVariant?: GridBackgroundVariant;
 }
 
 function getCellValue<T, U>(
@@ -32,7 +33,7 @@ function getCellValue<T, U>(
 export const TableRow = memo<TableRowProps>(function TableRow<T>(
   props: TableRowProps<T>
 ) {
-  const { row, columns, onMouseEnter, onMouseLeave } = props;
+  const { row, columns, backgroundVariant, onMouseEnter, onMouseLeave } = props;
 
   const data = row.useData();
   const isSelectedRow = row.useIsSelected();
@@ -42,6 +43,7 @@ export const TableRow = memo<TableRowProps>(function TableRow<T>(
   const isEditMode = row.useIsEditMode();
   const index = row.useIndex();
   const selectedCells = row.useSelectedCells();
+  const isSecondaryBackground = backgroundVariant === "secondary";
 
   return (
     <tr
@@ -76,6 +78,7 @@ export const TableRow = memo<TableRowProps>(function TableRow<T>(
             isSelected={isSelected}
             isFocused={isFocused}
             isAlternate={isZebra}
+            isSecondaryBackground={isSecondaryBackground}
           >
             {CellValue ? (
               <CellValue column={column} row={row} value={value} />

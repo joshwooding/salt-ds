@@ -1,6 +1,6 @@
 import { Story } from "@storybook/react";
 import {
-  ColDefNext,
+  ColDef,
   DataGrid,
   DataGridRowGroupLevelSettings,
   DataGridRowGroupSettings,
@@ -13,7 +13,10 @@ import { useMemo, useState } from "react";
 import { GridToolbar, GridToolbarModel } from "../src/data-grid/toolbar";
 import { ListCellValue } from "../src/data-grid/ListCellValue";
 import { PillCellValue } from "../src/data-grid/PillCellValue";
-import { groupBy } from "rxjs";
+import {
+  DataGridSettings,
+  DataGridSettingsModel,
+} from "./grid/data-grid-settings/DataGridSettings";
 
 export default {
   title: "Grid/Data Grid Capital Connect",
@@ -89,7 +92,7 @@ function createDummyInvestors(): Investor[] {
   return investors;
 }
 
-const columnDefinitions: ColDefNext<Investor>[] = [
+const columnDefinitions: ColDef<Investor>[] = [
   {
     key: "name",
     type: "text",
@@ -152,6 +155,9 @@ const DataGridStoryTemplate: Story<DataGridStoryProps> = (props) => {
   const [toolbarModel] = useState<GridToolbarModel<Investor>>(
     () => new GridToolbarModel(filterColumns)
   );
+  const [dataGridSettingsModel] = useState<DataGridSettingsModel>(
+    () => new DataGridSettingsModel()
+  );
 
   const filterFn = toolbarModel.filter.useFilterFn();
   const sortFn = toolbarModel.sort.useSortFn();
@@ -172,8 +178,11 @@ const DataGridStoryTemplate: Story<DataGridStoryProps> = (props) => {
             field: x.field,
           } as DataGridRowGroupLevelSettings<Investor>;
         }),
+        pinned: "left",
       };
     }, [groupByColumns]);
+
+  const backgroundVariant = dataGridSettingsModel.backgroundVariant.useValue();
 
   return (
     <div className={"gridStory"}>
@@ -188,7 +197,9 @@ const DataGridStoryTemplate: Story<DataGridStoryProps> = (props) => {
         sortSettings={sortSettings}
         rowGrouping={rowGrouping}
         leafNodeGroupNameField={"name"}
+        backgroundVariant={backgroundVariant}
       />
+      <DataGridSettings model={dataGridSettingsModel} />
     </div>
   );
 };
