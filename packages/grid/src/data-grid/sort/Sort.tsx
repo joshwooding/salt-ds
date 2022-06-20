@@ -1,4 +1,4 @@
-import { Button, makePrefixer } from "@jpmorganchase/uitk-core";
+import { Button, makePrefixer, Card } from "@jpmorganchase/uitk-core";
 import { SortColumn, SortItemModel, SortModel } from "./SortModel";
 import { useMemo } from "react";
 import {
@@ -60,45 +60,47 @@ export const SortItem = function SortItem<T>(props: SortItemProps<T>) {
   };
 
   return (
-    <div className={withBaseName("item")}>
-      <div className={withBaseName("item-title")}>
-        <ControlLabel label={index === 0 ? "Sort by" : "then by"} />
-      </div>
-      <div className={withBaseName("item-column")}>
-        <Dropdown
-          fullWidth={true}
-          source={columnNames}
-          selectedItem={column ? column.name : (null as any)}
-          onChange={onColumnChange}
-          WindowProps={{
-            className: withBaseName("window"),
-          }}
-        />
-      </div>
-      <div className={withBaseName("item-order")}>
-        <ToggleButtonGroup
-          onChange={onOrderChange}
-          selectedIndex={order === "ascending" ? 0 : 1}
+    <Card>
+      <div className={withBaseName("item")}>
+        <div className={withBaseName("item-title")}>
+          <ControlLabel label={index === 0 ? "Sort by" : "then by"} />
+        </div>
+        <div className={withBaseName("item-column")}>
+          <Dropdown
+            fullWidth={true}
+            source={columnNames}
+            selectedItem={column ? column.name : (null as any)}
+            onChange={onColumnChange}
+            WindowProps={{
+              className: withBaseName("window"),
+            }}
+          />
+        </div>
+        <div className={withBaseName("item-order")}>
+          <ToggleButtonGroup
+            onChange={onOrderChange}
+            selectedIndex={order === "ascending" ? 0 : 1}
+          >
+            <ToggleButton>A-Z</ToggleButton>
+            <ToggleButton>Z-A</ToggleButton>
+          </ToggleButtonGroup>
+        </div>
+        <Button
+          className={withBaseName("item-delete")}
+          variant="secondary"
+          onClick={onDeleteItem}
         >
-          <ToggleButton>A-Z</ToggleButton>
-          <ToggleButton>Z-A</ToggleButton>
-        </ToggleButtonGroup>
+          <DeleteIcon />
+        </Button>
+        <Button
+          className={withBaseName("item-add")}
+          variant="secondary"
+          onClick={onAddItem}
+        >
+          <AddIcon />
+        </Button>
       </div>
-      <Button
-        className={withBaseName("item-delete")}
-        variant="secondary"
-        onClick={onDeleteItem}
-      >
-        <DeleteIcon />
-      </Button>
-      <Button
-        className={withBaseName("item-add")}
-        variant="secondary"
-        onClick={onAddItem}
-      >
-        <AddIcon />
-      </Button>
-    </div>
+    </Card>
   );
 };
 

@@ -44,6 +44,7 @@ import {
 import { useDropdownSelectionAriaAttributes } from "./internal/useDropdownSelectionAriaAttributes";
 
 import "./Dropdown.css";
+import { WindowProps } from "../window/WindowContext";
 
 export type DropdownControllerStateAndHelpers<
   Item = string,

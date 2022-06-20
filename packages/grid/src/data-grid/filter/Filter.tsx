@@ -4,7 +4,7 @@ import {
   FilterRowKind,
   FilterRowModel,
 } from "./FilterModel";
-import { Button, makePrefixer } from "@jpmorganchase/uitk-core";
+import { Button, Card, makePrefixer } from "@jpmorganchase/uitk-core";
 import {
   ControlLabel,
   Dropdown,
@@ -77,58 +77,60 @@ export const FilterRow = function FilterRow<T>(props: FilterRowProps<T>) {
   };
 
   return (
-    <div className={withBaseName("row")}>
-      <div className={withBaseName("row-kind")}>
-        {kind === "where" ? (
-          <ControlLabel label="Where" className={withBaseName("where")} />
-        ) : (
+    <Card>
+      <div className={withBaseName("row")}>
+        <div className={withBaseName("row-kind")}>
+          {kind === "where" ? (
+            <ControlLabel label="Where" className={withBaseName("where")} />
+          ) : (
+            <Dropdown
+              fullWidth={true}
+              source={["and"]}
+              selectedItem={kind}
+              onChange={onKindChange}
+              WindowProps={{
+                className: withBaseName("window"),
+              }}
+            />
+          )}
+        </div>
+        <div className={withBaseName("row-column")}>
           <Dropdown
             fullWidth={true}
-            source={["and"]}
-            selectedItem={kind}
-            onChange={onKindChange}
+            source={columnNames}
+            selectedItem={column ? column.name : (null as any)}
+            onChange={onColumnChange}
             WindowProps={{
               className: withBaseName("window"),
             }}
           />
-        )}
+        </div>
+        <div className={withBaseName("row-operator")}>
+          <Dropdown
+            fullWidth={true}
+            source={operators}
+            selectedItem={operator}
+            onChange={onOperatorChange}
+            WindowProps={{
+              className: withBaseName("window"),
+            }}
+          />
+        </div>
+        <div className={withBaseName("row-query")}>
+          <Input value={query} onChange={onQueryChange} />
+        </div>
+        <Button
+          className={withBaseName("row-delete")}
+          variant={"secondary"}
+          onClick={onDeleteRow}
+        >
+          <DeleteIcon />
+        </Button>
+        <Button variant={"secondary"} onClick={onAddRow}>
+          <AddIcon />
+        </Button>
       </div>
-      <div className={withBaseName("row-column")}>
-        <Dropdown
-          fullWidth={true}
-          source={columnNames}
-          selectedItem={column ? column.name : (null as any)}
-          onChange={onColumnChange}
-          WindowProps={{
-            className: withBaseName("window"),
-          }}
-        />
-      </div>
-      <div className={withBaseName("row-operator")}>
-        <Dropdown
-          fullWidth={true}
-          source={operators}
-          selectedItem={operator}
-          onChange={onOperatorChange}
-          WindowProps={{
-            className: withBaseName("window"),
-          }}
-        />
-      </div>
-      <div className={withBaseName("row-query")}>
-        <Input value={query} onChange={onQueryChange} />
-      </div>
-      <Button
-        className={withBaseName("row-delete")}
-        variant={"secondary"}
-        onClick={onDeleteRow}
-      >
-        <DeleteIcon />
-      </Button>
-      <Button variant={"secondary"} onClick={onAddRow}>
-        <AddIcon />
-      </Button>
-    </div>
+    </Card>
   );
 };
 

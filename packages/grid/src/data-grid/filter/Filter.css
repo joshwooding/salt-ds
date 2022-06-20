@@ -10,9 +10,9 @@
   flex-direction: row;
   justify-content: left;
   align-items: center;
-  border: solid 1px black;
-  background-color: var(--uitk-color-grey-20);
-  padding: var(--uitk-size-basis-unit);
+  /*border: solid 1px black;*/
+  /*background-color: var(--uitk-color-grey-20);*/
+  /*padding: var(--uitk-size-basis-unit);*/
 }
 
 .uitkDataGridFilter-row-kind {
@@ -29,21 +29,21 @@
   margin-right: var(--uitk-size-basis-unit);
   width: 150px;
   flex-shrink: 0;
-  background-color: var(--uitk-color-white);
+  /*background-color: var(--uitk-color-white);*/
 }
 
 .uitkDataGridFilter-row-operator {
   margin-right: var(--uitk-size-basis-unit);
   width: 110px;
   flex-shrink: 0;
-  background-color: var(--uitk-color-white);
+  /*background-color: var(--uitk-color-white);*/
 }
 
 .uitkDataGridFilter-row-query {
   margin-right: var(--uitk-size-basis-unit);
   width: 200px;
   flex-shrink: 0;
-  background-color: var(--uitk-color-white);
+  /*background-color: var(--uitk-color-white);*/
 }
 
 .uitkDataGridFilter-row-delete {

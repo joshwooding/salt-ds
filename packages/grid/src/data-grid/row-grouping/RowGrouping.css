@@ -11,9 +11,10 @@
   flex-direction: row;
   justify-content: left;
   align-items: center;
-  border: solid 1px var(--uitk-separable-primary-borderColor);
-  background-color: var(--uitk-color-grey-20);
-  padding: var(--uitk-size-basis-unit);
+  flex-wrap: nowrap;
+  /*border: solid 1px var(--uitk-separable-primary-borderColor);*/
+  /*background-color: var(--uitk-color-grey-20);*/
+  /*padding: var(--uitk-size-basis-unit);*/
 }
 
 .uitkDataGridRowGrouping-row-title {
@@ -24,7 +25,7 @@
   margin-right: var(--uitk-size-basis-unit);
   width: 150px;
   flex-shrink: 0;
-  background-color: var(--uitk-color-white);
+  /*background-color: var(--uitk-color-white);*/
 }
 
 .uitkDataGridRowGrouping-row-delete {

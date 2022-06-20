@@ -1,4 +1,10 @@
-import { Button, makePrefixer } from "@jpmorganchase/uitk-core";
+import {
+  Button,
+  makePrefixer,
+  Portal,
+  useFloatingUI,
+  useWindow,
+} from "@jpmorganchase/uitk-core";
 import {
   FilterIcon,
   SearchIcon,
@@ -6,13 +12,7 @@ import {
   TreeIcon,
 } from "@jpmorganchase/uitk-icons";
 import { Filter, RowGrouping, Sort } from "@jpmorganchase/uitk-grid";
-import {
-  Portal,
-  Toolbar,
-  useFloatingUI,
-  useId,
-  useWindow,
-} from "@jpmorganchase/uitk-lab";
+import { Toolbar, useId } from "@jpmorganchase/uitk-lab";
 import "./GridToolbar.css";
 import { useState } from "react";
 import { GridToolbarModel } from "./GridToolbarModel";
@@ -28,9 +28,6 @@ type ToolbarState = "closed" | "filter" | "sort" | "rowGrouping";
 export const GridToolbar = function GridToolbar<T>(props: GridToolbarProps<T>) {
   const { model } = props;
   const [toolbarState, setToolbarState] = useState<ToolbarState>("closed");
-
-  // const [isFilterOpen, setFilterOpen] = useState<boolean>(false);
-  // const [isSortOpen, setSortOpen] = useState<boolean>(false);
 
   const onFilterClick = () => {
     setToolbarState((s) => (s === "filter" ? "closed" : "filter"));

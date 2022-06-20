@@ -1,4 +1,4 @@
-import { Button, makePrefixer } from "@jpmorganchase/uitk-core";
+import { Button, Card, makePrefixer } from "@jpmorganchase/uitk-core";
 import {
   GroupByColumn,
   RowGroupingLevelModel,
@@ -52,32 +52,34 @@ export const RowGroupingLevel = function RowGroupingLevel<T>(
   };
 
   return (
-    <div className={withBaseName("row")}>
-      <div className={withBaseName("row-title")}>
-        <ControlLabel label={index === 0 ? "Group by" : "then by"} />
+    <Card>
+      <div className={withBaseName("row")}>
+        <div className={withBaseName("row-title")}>
+          <ControlLabel label={index === 0 ? "Group by" : "then by"} />
+        </div>
+        <div className={withBaseName("row-column")}>
+          <Dropdown
+            fullWidth={true}
+            source={columnNames}
+            selectedItem={column ? column.name : (null as any)}
+            onChange={onColumnChange}
+            WindowProps={{
+              className: withBaseName("window"),
+            }}
+          />
+        </div>
+        <Button
+          className={withBaseName("row-delete")}
+          variant={"secondary"}
+          onClick={onDeleteRow}
+        >
+          <DeleteIcon />
+        </Button>
+        <Button variant={"secondary"} onClick={onAddRow}>
+          <AddIcon />
+        </Button>
       </div>
-      <div className={withBaseName("row-column")}>
-        <Dropdown
-          fullWidth={true}
-          source={columnNames}
-          selectedItem={column ? column.name : (null as any)}
-          onChange={onColumnChange}
-          WindowProps={{
-            className: withBaseName("window"),
-          }}
-        />
-      </div>
-      <Button
-        className={withBaseName("row-delete")}
-        variant={"secondary"}
-        onClick={onDeleteRow}
-      >
-        <DeleteIcon />
-      </Button>
-      <Button variant={"secondary"} onClick={onAddRow}>
-        <AddIcon />
-      </Button>
-    </div>
+    </Card>
   );
 };
 

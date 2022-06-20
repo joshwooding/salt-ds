@@ -5,9 +5,9 @@
   flex-direction: row;
   justify-content: left;
   align-items: center;
-  border: solid 1px black;
-  background-color: var(--uitk-color-grey-20);
-  padding: var(--uitk-size-basis-unit);
+  /*border: solid 1px black;*/
+  /*background-color: var(--uitk-color-grey-20);*/
+  /*padding: var(--uitk-size-basis-unit);*/
 }
 
 .uitkDataGridSort-item-title {
@@ -18,14 +18,14 @@
   margin-right: var(--uitk-size-basis-unit)x;
   width: 150px;
   flex-shrink: 0;
-  background-color: var(--uitk-color-white);
+  /*background-color: var(--uitk-color-white);*/
 }
 
 .uitkDataGridSort-item-order {
   margin-right: var(--uitk-size-basis-unit);
   /*width: 150px;*/
   flex-shrink: 0;
-  background-color: var(--uitk-color-white);
+  /*background-color: var(--uitk-color-white);*/
 }
 
 .uitkDataGridSort-window {

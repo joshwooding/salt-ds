@@ -1,16 +1,14 @@
-import { makePrefixer } from "@jpmorganchase/uitk-core";
+import {
+  Card,
+  makePrefixer,
+  Portal,
+  useFloatingUI,
+  useWindow,
+} from "@jpmorganchase/uitk-core";
 import "./ColumnMenu.css";
 import { MenuIcon } from "@jpmorganchase/uitk-icons";
 import { useRef, useState } from "react";
-import {
-  Card,
-  Portal,
-  Tab,
-  Tabstrip,
-  useFloatingUI,
-  useId,
-  useWindow,
-} from "@jpmorganchase/uitk-lab";
+import { Tab, Tabstrip, useId } from "@jpmorganchase/uitk-lab";
 import { flip, limitShift, shift } from "@floating-ui/react-dom-interactions";
 import { TextColumnFilter } from "./TextColumnFilter";
 import { ColumnMenuModel } from "./ColumnMenuModel";
