@@ -36,8 +36,8 @@
   --uitkButton-background-active: var(--pill-background);
   --uitkButton-textColor-active: var(--pill-text-color);
   --uitkButton-background-hover: var(--pill-background);
-  --uitkButton-textColor-hover: var(--pill-text-color);
-  --uitkButton-font-weight: var(--uitkPill-button-font-weight, var(--uitk-typography-weight-regular));
+  --uitkButton-text-color-hover: var(--pill-text-color);
+  --uitkButton-font-weight: var(--uitkPill-button-font-weight, var(--uitk-text-fontWeight));
   --uitkButton-padding: var(--uitkPill-button-padding, 0);
   --uitkButton-textTransform: var(--uitkPill-button-text-transform, unset);
   --uitkButton-cursor: normal;
@@ -52,7 +52,7 @@
   font-size: var(--uitkPill-font-size, var(--uitk-text-help-fontSize));
   height: var(--uitkPill-height, var(--pill-checkbox-size));
   letter-spacing: var(--uitkPill-letter-spacing, 0);
-  line-height: var(--uitkPill-line-height, var(--uitk-typography-lineHeight));
+  line-height: var(--uitkPill-line-height, var(--uitk-text-lineHeight));
   max-width: var(--uitkPill-max-width, 160px);
   min-width: var(--uitkPill-min-width, 40px);
   min-height: var(--uitkPill-min-height, var(--uitk-text-minHeight));
@@ -72,7 +72,7 @@
 .uitkPill-label {
   display: inline;
   flex-grow: 1;
-  font-weight: var(--uitkPill-font-weight, var(--uitk-typography-weight-regular));
+  font-weight: var(--uitkPill-font-weight, var(--uitk-text-fontWeight));
   overflow: hidden;
   padding-left: var(--uitkPill-label-padding-left, calc(var(--uitk-size-unit) * 0.75));
   pointer-events: none;
