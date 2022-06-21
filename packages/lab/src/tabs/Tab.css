@@ -15,7 +15,7 @@
 .uitkTab {
   --uitk-editable-label-padding: 0;
   --uitk-editable-label-height: var(--tabstrip-height);
-  --uitkInput-min-width: 4em;
+  --uitkInput-minWidth: 4em;
   --uitk-text-link-textDecoration: none;
   --uitk-text-link-textDecoration: none;
   --uitk-focused-outlineOffset: -2px;
@@ -114,7 +114,7 @@
 .uitkTab-dragging {
   --tab-cursor: grabbing;
   background-color: var(--tab-drag-background);
-  box-shadow: var(--uitk-draggable-box-shadow);
+  box-shadow: var(--uitk-overlayable-shadow-drag);
   z-index: 100;
   display: var(--tabstrip-tag-dragging-display);
 }

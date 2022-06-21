@@ -1,18 +1,19 @@
-import { Density, ToolkitProvider } from "@jpmorganchase/uitk-core";
+import { Density, Panel, ToolkitProvider } from "@jpmorganchase/uitk-core";
 import { SuccessTickIcon } from "@jpmorganchase/uitk-icons";
 import {
   FormField,
   makeRadioIcon,
-  Panel,
   RadioButton,
   RadioButtonGroup,
 } from "@jpmorganchase/uitk-lab";
 import {
   ColumnLayoutContainer,
   ColumnLayoutItem,
-} from "./story-layout/ColumnLayout";
+} from "@jpmorganchase/uitk-core/stories";
 import { ChangeEventHandler, FC, ReactNode, useState } from "react";
 import { ComponentMeta, ComponentStory, Story } from "@storybook/react";
+
+import "./RadioButton.stories.newapp-radio-button.css";
 
 export default {
   title: "Lab/Radio Button",
@@ -599,5 +600,26 @@ export const UncontrolledRadioButtonGroup: ComponentStory<
         value="option"
       />
     </RadioButtonGroup>
+  </div>
+);
+
+export const CustomStyling: ComponentStory<typeof RadioButtonGroup> = () => (
+  <div style={{ display: "flex" }}>
+    <ToolkitProvider density="high" theme={["light", "newapp"]}>
+      <Panel>
+        <RadioButtonGroup legend={"Legend"} row>
+          <RadioButton key="spot" label="Spot" value="spot" />
+          <RadioButton key="forward" label="Forward" value="forward" />
+        </RadioButtonGroup>
+      </Panel>
+    </ToolkitProvider>
+    <ToolkitProvider density="medium" theme={["dark", "newapp"]}>
+      <Panel>
+        <RadioButtonGroup legend={"Legend"} row>
+          <RadioButton key="spot" label="Spot" value="spot" />
+          <RadioButton key="forward" label="Forward" value="forward" />
+        </RadioButtonGroup>
+      </Panel>
+    </ToolkitProvider>
   </div>
 );
