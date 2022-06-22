@@ -1,30 +1,35 @@
 import {
   collapsibleType,
   ElementRef,
-  ManagedItem,
+  OverflowItem,
   orientationType,
 } from "./overflowTypes";
 import { Dimensions } from "./overflowDimensions";
+
+export const DropdownPlaceholder = () => null;
+export const getDropdownPlaceholder = () => <DropdownPlaceholder />;
 
 export type heightOrWidth = "width" | "height";
 export const NO_DATA = {};
 const LEFT_RIGHT = ["left", "right"];
 const TOP_BOTTOM = ["top", "bottom"];
 
-export const allExceptOverflowIndicator = (sum: number, m: ManagedItem) =>
+export const allExceptOverflowIndicator = (sum: number, m: OverflowItem) =>
   sum + (m.isOverflowIndicator ? 0 : m.size);
 
-export const isCollapsed = (item: ManagedItem) => item.collapsed === true;
-export const isCollapsing = (item: ManagedItem) => item.collapsing === true;
-export const isCollapsedOrCollapsing = (item: ManagedItem) =>
+export const isCollapsed = (item: OverflowItem): boolean =>
+  item.collapsed === true;
+export const isCollapsing = (item: OverflowItem): boolean =>
+  item.collapsing === true;
+export const isCollapsedOrCollapsing = (item: OverflowItem) =>
   isCollapsed(item) || isCollapsing(item);
-export const isOverflowed = (item: ManagedItem) => item.overflowed === true;
-export const notOverflowed = (item: ManagedItem) => !isOverflowed(item);
+export const isOverflowed = (item: OverflowItem) => item.overflowed === true;
+export const notOverflowed = (item: OverflowItem) => !isOverflowed(item);
 
-export const isCollapsible = (item: ManagedItem) =>
+export const isCollapsible = (item: OverflowItem) =>
   item.collapsible === "instant" || item.collapsible === "dynamic";
 
-export const getIsOverflowed = (managedItems: ManagedItem[]) =>
+export const getIsOverflowed = (managedItems: OverflowItem[]) =>
   managedItems.some(isOverflowed);
 
 export const measureContainer = (
@@ -64,7 +69,7 @@ export function measureElementSize(
   element: HTMLElement,
   dimension: heightOrWidth = "width",
   includeAutoMargin = false
-) {
+): number {
   const { [dimension]: size } = element.getBoundingClientRect();
   const { padEnd = false, padStart = false } = element.dataset;
   const style = getComputedStyle(element);
@@ -78,6 +83,14 @@ export function measureElementSize(
       ? 0
       : parseInt(style.getPropertyValue(`margin-${end}`), 10);
 
+  if (element.id === "blah") {
+    console.log({
+      size,
+      marginStart,
+      marginEnd,
+      margin: style.getPropertyValue(`margin-${start}`),
+    });
+  }
   let minWidth = size;
   const flexShrink = parseInt(style.getPropertyValue("flex-shrink"), 10);
   if (flexShrink > 0) {
@@ -92,7 +105,7 @@ export function measureElementSize(
   return marginStart + minWidth + marginEnd;
 }
 
-export const byDescendingPriority = (m1: ManagedItem, m2: ManagedItem) => {
+export const byDescendingPriority = (m1: OverflowItem, m2: OverflowItem) => {
   let result = m1.priority - m2.priority;
   if (result === 0) {
     result = m1.index - m2.index;
@@ -121,7 +134,7 @@ const asCollapsibleType = (value?: string): collapsibleType | undefined =>
     ? (value as collapsibleType)
     : undefined;
 
-export const getOverflowIndicator = (managedItems: ManagedItem[]) =>
+export const getOverflowIndicator = (managedItems: OverflowItem[]) =>
   managedItems.find((item) => item.isOverflowIndicator);
 
 // TODO whats the right way to deduce the label. AccessibleText added
@@ -129,9 +142,11 @@ export const getOverflowIndicator = (managedItems: ManagedItem[]) =>
 const getLabelForElement = (element: HTMLElement) =>
   element.title || getElementText(element) || element.innerText;
 
-const getPriority = (item: ManagedItem) => item.priority;
+const getPriority = (item: OverflowItem) => item.priority;
 
-export const popNextItemByPriority = (items: ManagedItem[]) => {
+export const popNextItemByPriority = (
+  items: OverflowItem[]
+): OverflowItem | null => {
   const maxPriority = Math.max(...items.map(getPriority));
   for (let i = items.length - 1; i >= 0; i--) {
     if (!items[i].isOverflowIndicator && items[i].priority === maxPriority) {
@@ -141,56 +156,81 @@ export const popNextItemByPriority = (items: ManagedItem[]) => {
   return null;
 };
 
-// This is a cut down version of the same function from html-element-utils
-export const measureChildNodes = (
-  ref: ElementRef,
+export const measureOverflowItems = (
+  items: OverflowItem[],
   dimension: heightOrWidth
-): ManagedItem[] => {
-  const { current: innerEl } = ref;
-  const measurements = Array.from(innerEl!.childNodes).reduce(
-    (list: ManagedItem[], node) => {
-      const childElement = node as HTMLElement;
-      const {
-        collapsible,
-        collapsed = "false",
-        collapsing = "false",
-        index,
-        priority = "1",
-        overflowIndicator,
-        overflowed,
-        reclaimSpace,
-      } = childElement.dataset ?? NO_DATA;
-      if (index) {
-        const size = measureElementSize(childElement, dimension);
-        // if (overflowed) {
-        //   delete childElement.dataset.overflowed;
-        // }
-        list.push({
-          collapsible: asCollapsibleType(collapsible),
-          collapsed: collapsed === "true",
-          collapsing: collapsing === "true",
-          fullSize: null,
-          index: parseInt(index, 10),
-          isOverflowIndicator: overflowIndicator === "true",
-          label: getLabelForElement(childElement),
-          overflowed: overflowed === "true",
-          priority: parseInt(priority, 10),
-          reclaimSpace: reclaimSpace === "true",
-          size,
-        });
-      }
-      return list;
-    },
-    []
-  );
+): OverflowItem[] => {
+  const measurements = items.map(({ id }) => {
+    console.log(`measure item #${id}`);
+    const childElement = document.getElementById(id);
+    const size = childElement ? measureElementSize(childElement, dimension) : 0;
+    console.log(`size of #${id} = ${size}`);
+    return size;
+  });
 
-  // return measurements.sort(byDescendingPriority);
-  return measurements;
+  if (measurements.some((size, i) => size !== items[i].size)) {
+    return items.map((item, i) =>
+      item.size === measurements[i]
+        ? item
+        : {
+            ...item,
+            size: measurements[i],
+          }
+    );
+  } else {
+    return items;
+  }
 };
 
-export const addAll = (sum: number, m: ManagedItem): number => sum + m.size;
+// export const measureChildNodes = (
+//   ref: ElementRef,
+//   dimension: heightOrWidth
+// ): OverflowItem<any>[] => {
+//   const { current: innerEl } = ref;
+//   const measurements = Array.from(innerEl!.childNodes).reduce(
+//     (list: OverflowItem<any>[], node) => {
+//       const childElement = node as HTMLElement;
+//       const {
+//         collapsible,
+//         collapsed = "false",
+//         collapsing = "false",
+//         index,
+//         priority = "1",
+//         overflowIndicator,
+//         overflowed,
+//         reclaimSpace,
+//       } = childElement.dataset ?? NO_DATA;
+//       if (index) {
+//         const size = measureElementSize(childElement, dimension);
+//         // if (overflowed) {
+//         //   delete childElement.dataset.overflowed;
+//         // }
+//         list.push({
+//           collapsible: asCollapsibleType(collapsible),
+//           collapsed: collapsed === "true",
+//           collapsing: collapsing === "true",
+//           fullSize: null,
+//           index: parseInt(index, 10),
+//           isOverflowIndicator: overflowIndicator === "true",
+//           label: getLabelForElement(childElement),
+//           overflowed: overflowed === "true",
+//           priority: parseInt(priority, 10),
+//           reclaimSpace: reclaimSpace === "true",
+//           size,
+//         });
+//       }
+//       return list;
+//     },
+//     []
+//   );
 
-export const getElementForItem = (ref: ElementRef, item: ManagedItem) =>
+//   // return measurements.sort(byDescendingPriority);
+//   return measurements;
+// };
+
+export const addAll = (sum: number, m: OverflowItem): number => sum + m.size;
+
+export const getElementForItem = (ref: ElementRef, item: OverflowItem) =>
   ref.current!.querySelector(
     `:scope > [data-index='${item.index}']`
   ) as HTMLElement;

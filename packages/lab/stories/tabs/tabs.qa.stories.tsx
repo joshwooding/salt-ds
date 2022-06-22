@@ -21,7 +21,7 @@ type ExampleProps = Pick<TabstripProps, "onChange"> & {
 
 const TabExamples: FC<TabstripProps> = (props) => (
   <Panel style={{ width: "700px", maxWidth: "100%" }}>
-    <Tabstrip tabs={initialTabs} {...props} />
+    <Tabstrip source={initialTabs} {...props} />
   </Panel>
 );
 
@@ -34,7 +34,7 @@ export const QA: Story = () => (
         <TabExamples centered />
         <TabExamples
           enableAddTab
-          tabs={initialTabs
+          source={initialTabs
             .concat(["More Services"])
             .map((label, i) => ({ label, closeable: i > 0 }))}
         />
@@ -54,7 +54,7 @@ export const QA: Story = () => (
         <TabExamples />
         <TabExamples
           enableAddTab
-          tabs={initialTabs
+          source={initialTabs
             .concat(["More Services"])
             .map((label, i) => ({ label, closeable: i > 0 }))}
         />

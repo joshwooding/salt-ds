@@ -8,47 +8,82 @@ import {
 
 import { orientationType } from "../responsive";
 import { EditableLabelProps } from "../editable-label";
-import { dragStrategy } from "./drag-drop";
+import { Editable } from "./useEditableItem";
+
+export interface FocusAPI {
+  focus: () => void;
+}
 
 export type TabDescriptor = {
+  id?: string;
   label: string;
   editable?: boolean;
   closeable?: boolean;
+  element?: JSX.Element;
 };
 export type TabsSource = string[] | TabDescriptor[];
 
-export type composableTabProps = Pick<
-  TabProps,
-  | "onBlur"
-  | "onFocus"
-  | "onKeyDown"
-  | "onClick"
-  | "onEnterEditMode"
-  | "onExitEditMode"
-  | "onMouseDown"
->;
+export type navigationProps = Pick<TabProps, "onFocus" | "onKeyDown">;
+
+export type composableTabProps = navigationProps &
+  Pick<
+    TabProps,
+    "onClick" | "onEnterEditMode" | "onExitEditMode" | "onMouseDown"
+  >;
+
+export type TabstripEmphasis = "low";
 
 export interface TabstripProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
-  allowDragDrop?: boolean | dragStrategy;
+  extends Partial<Editable>,
+    HTMLAttributes<HTMLDivElement> {
+  /**
+   * when true Tabs may be re-arranged by dragging individual Tabs to new position within Tabstrip.
+   */
+  allowDragDrop?: boolean;
+  /**
+   * Boolean that indicates if tabs are centered on the container
+   */
   centered?: boolean;
-  defaultTabs?: TabsSource;
-  defaultValue?: number;
+  defaultSource?: TabsSource;
+  /**
+   *  index value of Selected Tab, used in uncontrolled mode
+   */
+  defaultActiveTabIndex?: number;
+  /**
+   * Set visual emphasis - supported value 'low'
+   */
+  emphasis?: TabstripEmphasis;
+  /**
+   * Boolean that enables add new tab
+   */
+
   enableAddTab?: boolean;
+  /**
+   * @deprecated
+   * Boolean that enables closing tabs
+   */
   enableCloseTab?: boolean;
+  /**
+   * Boolean that enables renaming a tab
+   */
   enableRenameTab?: boolean;
   keyBoardActivation?: "manual" | "automatic";
   onAddTab?: () => void;
-  onChange?: (tabIndex: number) => void;
+  onActiveChange?: (tabIndex: number) => void;
   onCloseTab?: (tabIndex: number) => void;
-  noBorder?: boolean;
   onMoveTab?: (fromIndex: number, toIndex: number) => void;
   orientation?: orientationType;
+  /**
+   * Boolean that indicates whether to enable overflow dropdown or not
+   */
   overflowMenu?: boolean;
   promptForNewTabName?: boolean;
   showActivationIndicator?: boolean;
-  tabs?: TabsSource;
-  value?: number;
+  source?: TabsSource;
+  /**
+   *  index value of Active Tab, used in controlled mode
+   */
+  activeTabIndex?: number;
 }
 
 export type exitEditHandler = (
@@ -66,7 +101,7 @@ export interface responsiveDataAttributes {
 
 export type TabProps = Omit<
   HTMLAttributes<HTMLElement>,
-  "onClick" | "onKeyDown" | "onKeyUp" | "onMouseDown" /*| "children" */
+  "onClick" | "onKeyUp" | "onMouseDown" /*| "children" */
 > & {
   ariaControls?: AriaAttributes["aria-controls"];
   closeable?: boolean;
@@ -85,7 +120,6 @@ export type TabProps = Omit<
   onClose?: (index: number) => void;
   onEnterEditMode?: () => void;
   onExitEditMode?: exitEditHandler;
-  onKeyDown?: (e: KeyboardEvent, index: number, childIndex?: number) => void;
   onKeyUp?: (e: KeyboardEvent, index: number) => void;
   onMouseDown?: (e: MouseEvent<HTMLElement>, index: number) => void;
   orientation?: "horizontal" | "vertical";

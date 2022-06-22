@@ -1,34 +1,28 @@
-// @ts-nocheck
-import {
-  CSSProperties,
-  FC,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Button } from "@jpmorganchase/uitk-core";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Button, ToolkitProvider } from "@jpmorganchase/uitk-core";
 import {
   EditableLabel,
   Link,
   Tab,
+  TabDescriptor,
   Tabstrip,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  ParentChildLayout,
+  Text,
 } from "@jpmorganchase/uitk-lab";
-import { AdjustableFlexbox } from "./story-components";
 
-import "docs/story.css";
-import "./Flexbox.css";
+import { AdjustableFlexbox } from "../story-components";
 
 export default {
   title: "Lab/Tabstrip",
   component: Tabstrip,
 };
 
-const colours = [
+type colourMap = { [key: string]: string };
+const _colours = [
   "yellow",
   "red",
   "cornflowerblue",
@@ -41,30 +35,18 @@ const colours = [
   "maroon",
 ];
 
-const getTabColours = (tabs: string[]) =>
-  tabs.reduce((map, label, i) => ({ ...map, [label]: colours[i] }), {});
-
-interface FlexboxProps {
-  style?: CSSProperties;
-  height?: number;
-  row?: boolean;
-  width?: number;
-}
-
-const Flexbox: FC<FlexboxProps> = ({
-  children,
-  style,
-  height = 300,
-  row = false,
-  width = 600,
-}) => (
-  <div
-    className="Flexbox"
-    style={{ height, width, ...style, flexDirection: row ? "row" : "column" }}
-  >
-    {children}
-  </div>
-);
+const getTabColours = (tabs: string[] | TabDescriptor[]): colourMap => {
+  const tabStrings: string[] = tabs.map((tab: string | TabDescriptor) =>
+    typeof tab === "string" ? tab : tab.label
+  );
+  return tabStrings.reduce(
+    (map: colourMap, tab: string, i: number) => ({
+      ...map,
+      [tab]: _colours[i],
+    }),
+    {} as colourMap
+  );
+};
 
 const CloseTabWarningDialog = ({
   closedTab,
@@ -72,12 +54,18 @@ const CloseTabWarningDialog = ({
   onClose,
   onConfirm,
   open = false,
+}: {
+  closedTab: TabDescriptor;
+  onCancel: () => void;
+  onClose: () => void;
+  onConfirm: () => void;
+  open?: boolean;
 }) => (
   <Dialog open={open} state="warning" onClose={onClose}>
     <DialogTitle onClose={onClose}>Do you want to close this tab?</DialogTitle>
     <DialogContent>
       {`Closing the tab will cause any changes made to
-                '${closedTab}' to be lost.`}
+                '${closedTab.label}' to be lost.`}
     </DialogContent>
     <DialogActions>
       <Button onClick={onCancel}>Cancel</Button>
@@ -88,229 +76,113 @@ const CloseTabWarningDialog = ({
   </Dialog>
 );
 
-const useTabSelection = (initialValue?: any) => {
+const useTabSelection = (initialValue?: number) => {
   const [selectedTab, setSelectedTab] = useState(initialValue ?? 0);
-  const handleTabSelection = (tabIndex) => {
+  const handleTabSelection = (tabIndex: number) => {
+    // console.log(
+    //   `%ctabstrip.story setSelectedTab ${tabIndex}`,
+    //   "color:red;font-weight: bold;"
+    // );
     setSelectedTab(tabIndex);
   };
-  return [selectedTab, handleTabSelection];
+  return [selectedTab, handleTabSelection] as const;
 };
 
-export const DefaultTabstripStrings = ({ height }) => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
+interface TabPanelProps {
+  tabs: string[] | TabDescriptor[];
+  colours?: colourMap;
+  activeTabIndex: number;
+}
+
+const TabPanel = ({ tabs, activeTabIndex }: TabPanelProps) => {
+  const tab = tabs[activeTabIndex];
+  const label = typeof tab === "string" ? tab : tab.label;
+  return (
+    <div key={activeTabIndex} style={{ paddingTop: 20 }}>
+      <Text>{`Content for ${label} tab`}</Text>
+    </div>
+  );
+};
+
+const tabsAsStrings = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
+const tabsAsStringsLong = tabsAsStrings.concat([
+  "Reports",
+  "Statements",
+  "Administration",
+  "Virtual Branch",
+  "More Services",
+]);
+
+export const Default = () => {
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
   return (
-    <Flexbox height={height}>
-      <Tabstrip onChange={handleTabSelection} defaultTabs={tabs} />
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}`, padding: 10 }}
-        >{`Content for ${label} tab`}</div>
-      ))}
-    </Flexbox>
-  );
-};
-
-export const DefaultTabstripTabDescriptors = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
-  const tabs = [
-    { label: "Home" },
-    { label: "Transactions" },
-    { label: "Loans" },
-    { label: "Checks" },
-    { label: "Liquidity" },
-  ];
-  return (
-    <Flexbox>
-      <Tabstrip onChange={handleTabSelection} defaultTabs={tabs} />
-      {tabs.map(({ label }, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}`, padding: 10 }}
-        >{`Content for ${label} tab`}</div>
-      ))}
-    </Flexbox>
-  );
-};
-
-export const DefaultTabstrip = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
-  const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
-  return (
-    <Flexbox>
-      <Tabstrip onChange={handleTabSelection}>
-        {tabs.map((label, i) => (
-          <Tab label={label} key={i} />
-        ))}
-      </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}`, padding: 10 }}
-        >{`Content for ${label} tab`}</div>
-      ))}
-    </Flexbox>
-  );
-};
-
-const tabLabels = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
-
-export const DraggableTabs = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
-  const tabColours = useMemo(() => getTabColours(tabLabels), []);
-  const [tabs, setTabs] = useState(tabLabels);
-  const handleDrop = useCallback(
-    (fromIndex, toIndex) => {
-      const newTabs = tabs.slice();
-      const [tab] = newTabs.splice(fromIndex, 1);
-      if (toIndex === -1) {
-        setTabs(newTabs.concat(tab));
-      } else {
-        // const offset = toIndex < fromIndex ? +1 : 0;
-        newTabs.splice(toIndex, 0, tab);
-        setTabs(newTabs);
-      }
-    },
-    [tabs]
-  );
-  return (
-    <Flexbox>
+    <ToolkitProvider>
       <Tabstrip
-        allowDragDrop
-        onChange={handleTabSelection}
-        onMoveTab={handleDrop}
+        onActiveChange={setActiveTabIndex}
+        style={{ width: 600 }}
+        id="ts"
       >
         {tabs.map((label, i) => (
-          <Tab label={label} key={i} />
+          <Tab
+            label={label}
+            ariaControls={i === activeTabIndex ? `ts-panel-${i}` : undefined}
+          />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{
-            borderBottom: `solid 10px ${tabColours[label]}`,
-            padding: 10,
-          }}
-        >{`Content for ${label} tab`}</div>
-      ))}
-    </Flexbox>
-  );
-};
-export const DraggableTabsDropIndicator = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
-  const tabColours = useMemo(() => getTabColours(tabLabels), []);
-  const [tabs, setTabs] = useState(tabLabels);
-  const handleDrop = useCallback(
-    (fromIndex, toIndex) => {
-      const newTabs = tabs.slice();
-      const [tab] = newTabs.splice(fromIndex, 1);
-      if (toIndex === -1) {
-        setTabs(newTabs.concat(tab));
-      } else {
-        // const offset = toIndex < fromIndex ? +1 : 0;
-        newTabs.splice(toIndex, 0, tab);
-        setTabs(newTabs);
-      }
-    },
-    [tabs]
-  );
-  return (
-    <Flexbox>
-      <Tabstrip
-        allowDragDrop="drop-indicator"
-        onChange={handleTabSelection}
-        onMoveTab={handleDrop}
+      <div
+        id={`ts-panel-${activeTabIndex}`}
+        aria-labelledby={`ts-${activeTabIndex}`}
+        role="tabpanel"
       >
-        {tabs.map((label, i) => (
-          <Tab label={label} key={i} />
-        ))}
-      </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{
-            borderBottom: `solid 10px ${tabColours[label]}`,
-            padding: 10,
-          }}
-        >{`Content for ${label} tab`}</div>
-      ))}
-    </Flexbox>
-  );
-};
-export const DraggableTabsDropIndicatorWithOverflow = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
-  const [tabs, setTabs] = useState([
-    "Home",
-    "Transactions",
-    "Loans",
-    "Checks",
-    "Liquidity",
-    "Reports",
-    "Statements",
-    "Administration",
-    "Virtual Branch",
-    "More Services",
-  ]);
-  const handleDrop = useCallback(
-    (fromIndex, toIndex) => {
-      const newTabs = tabs.slice();
-      const [tab] = newTabs.splice(fromIndex, 1);
-      if (toIndex === -1) {
-        setTabs(newTabs.concat(tab));
-      } else {
-        // const offset = toIndex < fromIndex ? +1 : 0;
-        newTabs.splice(toIndex, 0, tab);
-        setTabs(newTabs);
-      }
-    },
-    [tabs]
-  );
-  return (
-    <Flexbox>
-      <Tabstrip
-        allowDragDrop="drop-indicator"
-        onChange={handleTabSelection}
-        onMoveTab={handleDrop}
-      >
-        {tabs.map((label, i) => (
-          <Tab label={label} key={i} />
-        ))}
-      </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}`, padding: 10 }}
-        >{`Content for ${label} tab`}</div>
-      ))}
-    </Flexbox>
+        <Text>{tabs[activeTabIndex]}</Text>
+      </div>
+      <br />
+      <br />
+    </ToolkitProvider>
   );
 };
 
-export const InitialSelectedTabTabstrip = () => {
+export const Overflow = ({
+  height,
+  width = 600,
+}: {
+  height: number;
+  width: number;
+}) => {
+  const [selectedTab, handleTabSelection] = useTabSelection();
+
+  return (
+    <ToolkitProvider>
+      <div>1) Tab definitions as an array of strings</div>
+      <div style={{ height, width }}>
+        <Tabstrip
+          onActiveChange={handleTabSelection}
+          source={tabsAsStringsLong}
+        />
+        <TabPanel tabs={tabsAsStrings} activeTabIndex={selectedTab} />
+      </div>
+      <br />
+      <br />
+    </ToolkitProvider>
+  );
+};
+
+export const ActiveTabDefinedByProp = () => {
   const [selectedTab, handleTabSelection] = useTabSelection(1);
   const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
   return (
-    <Flexbox>
-      <Tabstrip onChange={handleTabSelection} value={selectedTab}>
+    <div style={{ height: 300, width: 600 }}>
+      <Tabstrip
+        onActiveChange={handleTabSelection}
+        activeTabIndex={selectedTab}
+      >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -331,18 +203,12 @@ export const TabstripWithOverflow = () => {
 
   return (
     <AdjustableFlexbox>
-      <Tabstrip onChange={handleTabSelection}>
+      <Tabstrip onActiveChange={handleTabSelection}>
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
     </AdjustableFlexbox>
   );
 };
@@ -364,20 +230,14 @@ export const TabstripWithoutOverflow = () => {
   ];
 
   return (
-    <Flexbox>
-      <Tabstrip onChange={handleTabSelection} overflowMenu={false}>
+    <div style={{ height: 300, width: 600 }}>
+      <Tabstrip onActiveChange={handleTabSelection} overflowMenu={false}>
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -392,47 +252,39 @@ export const TabstripCentered = () => {
   ];
 
   return (
-    <Flexbox>
-      <Tabstrip centered onChange={handleTabSelection} overflowMenu={false}>
-        {tabs.map((label, i) => (
-          <Tab label={label} key={i} />
-        ))}
-      </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
-  );
-};
-
-export const TabstripSecondary = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
-  const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
-
-  return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
-        noBorder
-        onChange={handleTabSelection}
+        centered
+        onActiveChange={handleTabSelection}
         overflowMenu={false}
-        value={selectedTab}
       >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
+  );
+};
+
+export const LowEmphasisTabstrip = () => {
+  const [selectedTab, handleTabSelection] = useTabSelection();
+  const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
+
+  return (
+    <div style={{ height: 300, width: 600 }}>
+      <Tabstrip
+        emphasis="low"
+        onActiveChange={handleTabSelection}
+        overflowMenu={false}
+        activeTabIndex={selectedTab}
+      >
+        {tabs.map((label, i) => (
+          <Tab label={label} key={i} />
+        ))}
+      </Tabstrip>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -457,7 +309,7 @@ export const TheFullMonty = () => {
   };
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const onTabShouldClose = (index) => {
+  const onTabShouldClose = (index: number) => {
     setIsDialogOpen(true);
     setClosingTabIndex(index);
   };
@@ -478,7 +330,7 @@ export const TheFullMonty = () => {
     }
   };
 
-  const handleTabSelection = (tabIndex) => {
+  const handleTabSelection = (tabIndex: number) => {
     setSelectedTab(tabIndex);
   };
 
@@ -493,26 +345,20 @@ export const TheFullMonty = () => {
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
         enableAddTab
         enableCloseTab
         onAddTab={handleAddTab}
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         onCloseTab={onTabShouldClose}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map(({ label, closeable }) => (
           <Tab closeable={closeable} label={label} key={label} />
         ))}
       </Tabstrip>
-      {tabs.map(({ label }, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={label}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
       {isDialogOpen && typeof closingTabIndex === "number" && (
         <CloseTabWarningDialog
           closedTab={tabs[closingTabIndex]}
@@ -522,7 +368,7 @@ export const TheFullMonty = () => {
           open
         />
       )}
-    </Flexbox>
+    </div>
   );
 };
 export const TheFullMontyNoConfirmation = () => {
@@ -542,7 +388,7 @@ export const TheFullMontyNoConfirmation = () => {
     setSelectedTab(count);
   };
 
-  const onTabDidClose = (closingTabIndex) => {
+  const onTabDidClose = (closingTabIndex: number) => {
     // This will always be true if we reach this code path, but TypeScript needs the clarification
     if (closingTabIndex !== undefined) {
       const newTabs = [...tabs];
@@ -558,43 +404,37 @@ export const TheFullMontyNoConfirmation = () => {
     }
   };
 
-  const handleTabSelection = (tabIndex) => {
+  const handleTabSelection = (tabIndex: number) => {
     setSelectedTab(tabIndex);
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
         enableAddTab
         enableCloseTab
         onAddTab={handleAddTab}
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         onCloseTab={onTabDidClose}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map(({ label, closeable }) => (
           <Tab closeable={closeable} label={label} key={label} />
         ))}
       </Tabstrip>
-      {tabs.map(({ label }, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={label}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
 // TODO related to how we handle custom tabs
-export const TabstripLink = ({ height }) => {
+export const TabstripLink = ({ height }: { height: number }) => {
   const [selectedTab, handleTabSelection] = useTabSelection();
   const tabs = ["Home", "Transactions", "Loans", "Checks", "Google"];
 
   return (
-    <Flexbox height={height}>
-      <Tabstrip onChange={handleTabSelection} overflowMenu={false}>
+    <div style={{ height: 300, width: 600 }}>
+      <Tabstrip onActiveChange={handleTabSelection} overflowMenu={false}>
         <Tab label="Home" />
         <Tab label="Transactions" />
         <Tab label="Loans" />
@@ -605,24 +445,18 @@ export const TabstripLink = ({ height }) => {
           </Link>
         </Tab>
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
-export const CustomTabContent = ({ height }) => {
+export const CustomTabContent = ({ height }: { height: number }) => {
   const [selectedTab, handleTabSelection] = useTabSelection();
   const tabs = ["Home", "Transactions", "Loans", "Checks", "Google"];
 
   return (
-    <Flexbox height={height}>
-      <Tabstrip onChange={handleTabSelection} overflowMenu={false}>
+    <div style={{ height: 300, width: 600 }}>
+      <Tabstrip onActiveChange={handleTabSelection} overflowMenu={false}>
         <Tab label="Home" />
         <Tab label="Transactions" />
         <Tab label="Loans" />
@@ -633,19 +467,13 @@ export const CustomTabContent = ({ height }) => {
           </Link>
         </Tab>
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
 export const TabstripControlledAddNew = () => {
-  const [selectedTabIndex, setSelectedTabIndex] = useTabSelection();
+  const [activeTabIndex, setSelectedTabIndex] = useTabSelection();
   const [tabs, setTabs] = useState(["Home", "Transactions"]);
   //TODO add confirmation dialog
   const tabCount = tabs.length;
@@ -661,75 +489,88 @@ export const TabstripControlledAddNew = () => {
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 250 }}>
       <Tabstrip
         enableAddTab
         onAddTab={handleAddTab}
-        onChange={setSelectedTabIndex}
-        value={selectedTabIndex}
+        onActiveChange={setSelectedTabIndex}
+        activeTabIndex={activeTabIndex}
       >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTabIndex !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={activeTabIndex} />
+    </div>
+  );
+};
+
+export const TabstripAddNew = () => {
+  const [activeTabIndex, setSelectedTabIndex] = useTabSelection();
+  const tabs = useMemo(() => {
+    return tabsAsStrings.slice(0, 2);
+  }, []);
+
+  return (
+    // <ComponentAnatomy>
+    <div style={{ height: 300, width: 250 }}>
+      <Tabstrip enableAddTab onActiveChange={setSelectedTabIndex}>
+        {tabs.map((label, i) => (
+          <Tab label={label} key={i} />
+        ))}
+      </Tabstrip>
+      <TabPanel tabs={tabs} activeTabIndex={activeTabIndex} />
+    </div>
+    // </ComponentAnatomy>
   );
 };
 
 export const TabstripControlledAddAndDelete = () => {
-  const [selectedTabIndex, setSelectedTabIndex] = useTabSelection();
-  const [tabs, setTabs] = useState(["Home", "Transactions"]);
+  const [activeTabIndex, setSelectedTabIndex] = useTabSelection();
+  const [tabs, setTabs] = useState([
+    "Home",
+    "Transactions",
+    "Loans",
+    "Checks",
+    "Liquidity",
+  ]);
   //TODO add confirmation dialog
   const tabCount = tabs.length;
   const newTabCount = useRef(0);
   const handleAddTab = () => {
     newTabCount.current += 1;
+    const labelWithCount = ` ${newTabCount.current}`;
     setTabs((state) =>
-      state.concat([
-        `New Tab${newTabCount.current > 1 ? " " + newTabCount.current : ""}`,
-      ])
+      state.concat([`New Tab${newTabCount.current > 1 ? labelWithCount : ""}`])
     );
     setSelectedTabIndex(tabCount);
   };
 
-  const handleCloseTab = (tabIndex) => {
+  const handleCloseTab = (tabIndex: number) => {
     newTabCount.current += 1;
-    colours.splice(tabIndex, 1);
+    // colours.splice(tabIndex, 1);
     setTabs((state) => state.filter((tab, i) => i !== tabIndex));
-    if (selectedTabIndex > tabIndex) {
-      setSelectedTabIndex(selectedTabIndex - 1);
+    if (activeTabIndex > tabIndex) {
+      setSelectedTabIndex(activeTabIndex - 1);
     }
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
         enableAddTab
         enableCloseTab
         onAddTab={handleAddTab}
-        onChange={setSelectedTabIndex}
+        onActiveChange={setSelectedTabIndex}
         onCloseTab={handleCloseTab}
-        value={selectedTabIndex}
+        activeTabIndex={activeTabIndex}
       >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTabIndex !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={activeTabIndex} />
+    </div>
   );
 };
 
@@ -739,59 +580,50 @@ export const TabstripAddNewWithRename = () => {
   const newTabCount = useRef(0);
   const handleAddTab = () => {
     newTabCount.current += 1;
+    const labelWithCount = ` ${newTabCount.current}`;
     setTabs((state) =>
-      state.concat([
-        `New Tab${newTabCount.current > 1 ? " " + newTabCount.current : ""}`,
-      ])
+      state.concat([`New Tab${newTabCount.current > 1 ? labelWithCount : ""}`])
     );
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
         enableAddTab
         enableRenameTab
         onAddTab={handleAddTab}
-        onChange={handleTabSelection}
-        defaultValue={0}
+        onActiveChange={handleTabSelection}
+        defaultActiveTabIndex={0}
       >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
-export const TabstripUncontrolledStringTabsAddNewWithRename = ({ height }) => {
+export const TabstripUncontrolledStringTabsAddNewWithRename = ({
+  height,
+}: {
+  height: number;
+}) => {
   const [selectedTab, handleTabSelection] = useTabSelection();
   const tabs = ["Home", "Transactions"];
   //TODO add confirmation dialog
 
   return (
-    <Flexbox height={height}>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
-        defaultTabs={tabs}
+        defaultSource={tabs}
         enableAddTab
         enableRenameTab
-        onChange={handleTabSelection}
-        defaultValue={0}
+        onActiveChange={handleTabSelection}
+        defaultActiveTabIndex={0}
       />
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -804,26 +636,20 @@ export const TabstripAddNewWithoutAscendingNumber = () => {
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
         enableAddTab
         onAddTab={handleAddTab}
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         overflowMenu={false}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -835,41 +661,32 @@ export const TabstripAddNewAlternativeDefaultName = () => {
   const newTabCount = useRef(0);
   const handleAddTab = () => {
     newTabCount.current += 1;
+    const labelWithCount = ` ${newTabCount.current}`;
     setTabs((state) =>
-      state.concat([
-        `New Workspace${
-          newTabCount.current > 1 ? " " + newTabCount.current : ""
-        }`,
-      ])
+      state.concat([`New Tab${newTabCount.current > 1 ? labelWithCount : ""}`])
     );
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
         enableAddTab
         onAddTab={handleAddTab}
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         overflowMenu={false}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map((label, i) => (
           <Tab label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
 // TODO BUG after we close from overflow
-export const TabstripCloseConfigured = ({ height }) => {
+export const TabstripCloseConfigured = ({ height }: { height: number }) => {
   const [selectedTab, handleTabSelection] = useTabSelection();
   const [tabs, setTabs] = useState([
     { label: "Home", closeable: false },
@@ -881,36 +698,36 @@ export const TabstripCloseConfigured = ({ height }) => {
     { label: "Virtual Branch", closeable: true },
     { label: "More Services", closeable: true },
   ]);
-  const handleCloseTab = (tabIndex) => {
+  const handleCloseTab = (tabIndex: number) => {
     console.log(`deleteTab ${tabIndex}`);
     // remove the color as well, else they will appear on different tabs
-    colours.splice(tabIndex, 1);
+    // colours.splice(tabIndex, 1);
     setTabs((state) => state.filter((tab, i) => i !== tabIndex));
   };
 
   return (
-    <Flexbox height={height}>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         onCloseTab={handleCloseTab}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map(({ closeable, label }) => (
           <Tab closeable={closeable} label={label} key={label} />
         ))}
       </Tabstrip>
-      {tabs.map(({ label }, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={label}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
-export const TabstripCloseDeclarative = ({ height, width = 1000 }) => {
+export const TabstripCloseDeclarative = ({
+  height,
+  width = 1000,
+}: {
+  height: number;
+  width?: number;
+}) => {
   const [selectedTab, handleTabSelection] = useTabSelection();
   const [tabs, setTabs] = useState([
     { label: "Home", closeable: false },
@@ -922,32 +739,26 @@ export const TabstripCloseDeclarative = ({ height, width = 1000 }) => {
     { label: "Virtual Branch", closeable: true },
     { label: "More Services", closeable: true },
   ]);
-  const handleDeleteTab = (tabIndex) => {
+  const handleDeleteTab = (tabIndex: number) => {
     console.log(`handle delete in story`);
     // remove the color as well, else they will appear on different tabs
-    colours.splice(tabIndex, 1);
+    // colours.splice(tabIndex, 1);
     setTabs((state) => state.filter((tab, i) => i !== tabIndex));
   };
 
   return (
-    <Flexbox height={height} width={width}>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         onCloseTab={handleDeleteTab}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map(({ closeable, label }) => (
           <Tab closeable={closeable} label={label} key={label} />
         ))}
       </Tabstrip>
-      {tabs.map(({ label }, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={label}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -965,31 +776,25 @@ export const TabstripCloseWithConfirmationDialog = () => {
     { label: "Virtual Branch", closeable: true },
     { label: "More Services", closeable: true },
   ]);
-  const handleDeleteTab = (tabIndex) => {
+  const handleDeleteTab = (tabIndex: number) => {
     // remove the color as well, else they will appear on different tabs
-    colours.splice(tabIndex, 1);
+    // colours.splice(tabIndex, 1);
     setTabs((state) => state.filter((tab, i) => i !== tabIndex));
   };
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         onCloseTab={handleDeleteTab}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map(({ closeable, label }) => (
           <Tab closeable={closeable} label={label} key={label} />
         ))}
       </Tabstrip>
-      {tabs.map(({ label }, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={label}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
@@ -998,45 +803,36 @@ export const TabstripRename = () => {
   const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
 
   return (
-    <Flexbox>
+    <div style={{ height: 300, width: 600 }}>
       <Tabstrip
-        onChange={handleTabSelection}
+        onActiveChange={handleTabSelection}
         overflowMenu={false}
-        value={selectedTab}
+        activeTabIndex={selectedTab}
       >
         {tabs.map((label, i) => (
           <Tab editable label={label} key={i} />
         ))}
       </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
   );
 };
 
 export const VerticalTabs = () => {
-  const [selectedTab, handleTabSelection] = useTabSelection();
+  const [activeTabIndex, setActiveTabIndex] = useTabSelection();
   const tabs = ["Home", "Transactions", "Loans", "Checks", "Liquidity"];
   return (
-    <Flexbox row>
-      <Tabstrip onChange={handleTabSelection} orientation="vertical">
-        {tabs.map((label, i) => (
-          <Tab label={label} key={i} />
-        ))}
-      </Tabstrip>
-      {tabs.map((label, idx) => (
-        <div
-          aria-hidden={selectedTab !== idx}
-          key={idx}
-          style={{ borderBottom: `solid 10px ${colours[idx]}` }}
-        />
-      ))}
-    </Flexbox>
+    <ParentChildLayout
+      child={<TabPanel tabs={tabs} activeTabIndex={activeTabIndex} />}
+      parent={
+        <Tabstrip onActiveChange={setActiveTabIndex} orientation="vertical">
+          {tabs.map((label, i) => (
+            <Tab label={label} key={i} />
+          ))}
+        </Tabstrip>
+      }
+      style={{ width: 600 }}
+    />
   );
 };
 
@@ -1045,8 +841,8 @@ export const EditableLabelUncontrolledValueUncontrolledEditing = () => {
     console.log("handleEnterEditMode");
   };
 
-  const handleExitEditMode = (value) => {
-    console.log(`handleExitEditMode '${value}'`);
+  const handleExitEditMode = (value?: string) => {
+    console.log(`handleExitEditMode `, { value });
   };
 
   return (
@@ -1069,13 +865,13 @@ export const EditableLabelUncontrolledValueUncontrolledEditing = () => {
 };
 
 export const EditableLabelControlledValueUncontrolledEditing = () => {
-  const [value, setValue] = useState("Initial value");
+  const [value, setValue] = useState<string>("Initial value");
 
   const handleEnterEditMode = () => {
     console.log("handleEnterEditMode");
   };
 
-  const handleExitEditMode = (finalValue) => {
+  const handleExitEditMode = (finalValue = "") => {
     console.log(`handleExitEditMode '${value}'`);
     if (finalValue !== value) {
       // edit was cancelled
@@ -1110,7 +906,7 @@ export const EditableLabelUncontrolledValueControlledEditing = () => {
     setEditing(true);
   };
 
-  const handleExitEditMode = (value) => {
+  const handleExitEditMode = (value = "") => {
     setEditing(false);
     console.log(`handleExitEditMode '${value}'`);
   };
@@ -1143,7 +939,7 @@ export const EditableLabelControlledValueControlledEditingEditOnMount = () => {
     setEditing(true);
   };
 
-  const handleExitEditMode = (finalValue) => {
+  const handleExitEditMode = (finalValue = "") => {
     setEditing(false);
     if (finalValue !== value) {
       // edit was cancelled
@@ -1167,6 +963,121 @@ export const EditableLabelControlledValueControlledEditingEditOnMount = () => {
         onChange={setValue}
         onEnterEditMode={handleEnterEditMode}
         onExitEditMode={handleExitEditMode}
+      />
+    </div>
+  );
+};
+
+const tabLabels = [
+  "Tab Test 1",
+  "Tab Test 2",
+  "Tab Test 3",
+  "Tab Test 4",
+  "Tab Test 5",
+  "Tab Test 6",
+  "Tab Test 7",
+  "Tab Test 8",
+];
+// const tabLabels = [
+//   "Home",
+//   "Transactions",
+//   "Loans",
+//   "Checks",
+//   "Liquidity",
+//   "Tab Test 1",
+//   "Tab Test 2",
+//   "Tab Test 3",
+//   "Tab Test 4",
+// ];
+
+export const DraggableTabs = () => {
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const [tabs, setTabs] = useState(tabLabels);
+  const handleDrop = useCallback(
+    (fromIndex, toIndex) => {
+      const newTabs = tabs.slice();
+      const [tab] = newTabs.splice(fromIndex, 1);
+      if (toIndex === -1) {
+        setTabs(newTabs.concat(tab));
+      } else {
+        // const offset = toIndex < fromIndex ? +1 : 0;
+        newTabs.splice(toIndex, 0, tab);
+        setTabs(newTabs);
+      }
+    },
+    [tabs]
+  );
+  return (
+    <div style={{ height: 300, width: 700 }}>
+      <Tabstrip
+        allowDragDrop
+        onActiveChange={setSelectedTab}
+        onMoveTab={handleDrop}
+      >
+        {tabs.map((label, i) => (
+          <Tab label={label} key={i} />
+        ))}
+      </Tabstrip>
+      <TabPanel tabs={tabs} activeTabIndex={selectedTab} />
+    </div>
+  );
+};
+export const DraggableTabsWithOverflow = () => {
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [tabs, setTabs] = useState([
+    "Home",
+    "Transactions",
+    "Loans",
+    "Checks",
+    "Liquidity",
+    "Reports",
+    "Statements",
+    "Administration",
+    "Virtual Branch",
+    "More Services",
+  ]);
+
+  const tabColours = useMemo(() => getTabColours(tabs), []);
+
+  const handleDrop = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      const tab = tabs[fromIndex];
+      const newTabs = tabs.filter((t) => t !== tab);
+      console.log(`handleDrop from ${fromIndex} to ${toIndex} 
+        existing tabs ${tabs.join(",")}
+      `);
+      if (toIndex === -1) {
+        setTabs(newTabs.concat(tab));
+      } else {
+        // const offset = toIndex < fromIndex ? +1 : 0;
+        newTabs.splice(toIndex, 0, tab);
+        console.log(`new tabs ${newTabs.join(",")}`);
+        setTabs(newTabs);
+      }
+    },
+    [tabs]
+  );
+
+  const childTabs = useMemo(
+    () => tabs.map((label, i) => <Tab label={label} key={i} />),
+    [tabs]
+  );
+
+  return (
+    <div style={{ height: 300, width: 600 }}>
+      <Tabstrip
+        activeTabIndex={activeTabIndex}
+        allowDragDrop
+        onActiveChange={setActiveTabIndex}
+        onMoveTab={handleDrop}
+      >
+        {childTabs}
+      </Tabstrip>
+      <TabPanel
+        colours={tabColours}
+        tabs={tabs}
+        activeTabIndex={activeTabIndex}
       />
     </div>
   );
