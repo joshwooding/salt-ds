@@ -7,7 +7,7 @@ import {
   MessageIcon,
 } from "@jpmorganchase/uitk-icons";
 import {
-  ComboBox,
+  Combobox,
   ContactAction,
   ContactActions,
   ContactAvatar,
@@ -19,16 +19,13 @@ import {
   ContactSecondaryInfo,
   ContactTertiaryInfo,
   FormField,
+  ListItem,
+  ListItemType,
   Overlay,
+  SelectionChangeHandler,
   useOverlay,
 } from "@jpmorganchase/uitk-lab";
 import { ValueComponentProps } from "@jpmorganchase/uitk-lab/src/contact-details/internal";
-import { ListItemBase } from "@jpmorganchase/uitk-lab/src/list";
-import { ListChangeHandler } from "@jpmorganchase/uitk-lab/src/list/ListProps";
-import {
-  IndexedListItemProps,
-  useListItem,
-} from "@jpmorganchase/uitk-lab/src/list/useListItem";
 import { Story } from "@storybook/react";
 import { FC, forwardRef, Fragment } from "react";
 
@@ -531,11 +528,11 @@ interface NameEmail {
   email: string;
 }
 
-const ItemWithContactDetailsTooltip: FC<IndexedListItemProps<NameEmail>> = (
-  props
-) => {
-  const { item, itemProps } = useListItem<NameEmail>(props);
-  const itemLabel = contactToString(item);
+const ItemWithContactDetailsTooltip: ListItemType<NameEmail> = ({
+  item,
+  ...props
+}) => {
+  const itemLabel = item ? contactToString(item) : "";
   const { getTriggerProps, getTooltipProps } = useTooltip({ enterDelay: 500 });
 
   return (
@@ -550,8 +547,8 @@ const ItemWithContactDetailsTooltip: FC<IndexedListItemProps<NameEmail>> = (
               embedded
               stackAtBreakpoint={250}
             >
-              <ContactPrimaryInfo text={item.name} />
-              <ContactSecondaryInfo text={item.email} />
+              <ContactPrimaryInfo text={item?.name ?? ""} />
+              <ContactSecondaryInfo text={item?.email ?? ""} />
               <ContactMetadata>
                 <ContactMetadataItem value="Position" label="Role" />
                 <ContactMetadataItem value="City, Country" label="Location" />
@@ -569,9 +566,9 @@ const ItemWithContactDetailsTooltip: FC<IndexedListItemProps<NameEmail>> = (
           ),
         })}
       />
-      <ListItemBase {...getTriggerProps<typeof ListItemBase>(itemProps)}>
+      <ListItem {...getTriggerProps<ListItemType>(props)}>
         <label>{itemLabel}</label>
-      </ListItemBase>
+      </ListItem>
     </>
   );
 };
@@ -590,16 +587,16 @@ const tooltipContacts = [
 ];
 
 const WithinComboBoxTooltip: Story = () => {
-  const handleChange: ListChangeHandler<NameEmail> = (_, selectedItem) => {
+  const handleChange: SelectionChangeHandler<NameEmail> = (_, selectedItem) => {
     console.log("selection changed", selectedItem);
   };
 
   return (
     <FormField label="Select a person" style={{ maxWidth: 292 }}>
-      <ComboBox
+      <Combobox
         ListItem={ItemWithContactDetailsTooltip}
-        itemToString={contactToString as (x: any) => string}
-        onChange={handleChange}
+        itemToString={contactToString}
+        onSelectionChange={handleChange}
         source={tooltipContacts}
         width={200}
       />
