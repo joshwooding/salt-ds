@@ -80,6 +80,7 @@ const allAllowedKeys = [
   // additional to decide
   "typography",
   "size",
+  "zindex",
 ];
 
 const regexpPattern = new RegExp(
