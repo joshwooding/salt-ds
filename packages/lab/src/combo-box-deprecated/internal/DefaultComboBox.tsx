@@ -1,48 +1,95 @@
 import {
+  Portal,
+  TooltipContext,
+  TooltipContextProps,
+  useAriaAnnouncer,
+  useFloatingUI,
+  useForkRef,
+  Window,
+} from "@jpmorganchase/uitk-core";
+import {
+  HTMLAttributes,
+  ReactNode,
+  Ref,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import {
   flip,
   limitShift,
   shift,
   size,
 } from "@floating-ui/react-dom-interactions";
+import { Input, InputProps } from "../../input";
 import {
-  Portal,
-  TooltipContext,
-  useAriaAnnouncer,
-  useFloatingUI,
-  useForkRef,
-  useWindow,
-} from "@jpmorganchase/uitk-core";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ListBase, ListStateContext } from "../../list";
-import { TokenizedInputBase, TokenizedInputProps } from "../../tokenized-input";
-import { BaseComboBoxProps } from "./DefaultComboBox";
+  ListBase,
+  ListProps,
+  ListSelectionVariant,
+  ListStateContext,
+} from "../../list-deprecated";
+import { GetFilterRegex } from "../filterHelpers";
 import { getAnnouncement } from "./getAnnouncement";
-import { useMultiSelectComboBox } from "./useMultiSelectComboBox";
+import { useComboBox } from "./useComboBox";
 
-export type MultiSelectComboBoxProps<Item> = BaseComboBoxProps<
+export type BaseComboBoxProps<
   Item,
-  "multiple"
+  Variant extends ListSelectionVariant = "default"
+> = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "children" | "onChange" | "onSelect" | "onFocus" | "onBlur" | "onClick"
 > &
   Pick<
-    TokenizedInputProps<Item>,
-    | "onFocus"
-    | "onBlur"
-    | "onInputFocus"
-    | "onInputBlur"
-    | "onInputChange"
-    | "onInputSelect"
-    | "stringToItem"
+    ListProps<Item, Variant>,
+    | "displayedItemCount"
+    | "itemToString"
+    | "listRef"
+    | "onChange"
+    | "onSelect"
+    | "overscanCount"
+    | "tooltipEnterDelay"
+    | "tooltipLeaveDelay"
+    | "tooltipPlacement"
+    | "virtualized"
+    | "width"
   > & {
-    InputProps?: Partial<TokenizedInputProps<Item>>;
-    initialSelectedItem?: Item[];
-    selectedItem?: Item[];
-    multiSelect: true;
-    delimiter?: string | string[];
+    ListItem?: ReactNode;
+    ListProps?: Partial<ListProps<Item, Variant>>;
+    Tooltip?: TooltipContextProps["Tooltip"];
+    allowFreeText?: boolean;
+    disabled?: boolean;
+    getFilterRegex?: GetFilterRegex;
+    initialOpen?: boolean;
+    inputRef?: Ref<HTMLInputElement>;
+    inputValue?: string;
+    listWidth?: number | string;
+
+    rootWidth?: string | number;
+    rootRef: RefObject<HTMLElement>;
+    disabledPortal?: boolean;
+    source: ReadonlyArray<Item>;
   };
 
-export function MultiSelectComboBox<Item>(
-  props: MultiSelectComboBoxProps<Item>
-) {
+export interface DefaultComboBoxProps<Item>
+  extends BaseComboBoxProps<Item>,
+    Pick<InputProps, "onFocus" | "onBlur"> {
+  InputProps?: InputProps;
+  initialSelectedItem?: Item;
+  selectedItem?: Item;
+  multiSelect?: false;
+  onInputFocus?: InputProps["onFocus"];
+  onInputBlur?: InputProps["onBlur"];
+  onInputChange?: InputProps["onChange"];
+  onInputSelect?: InputProps["onSelect"];
+  stringToItem?: (value?: string) => Item | null | undefined;
+}
+
+export function DefaultComboBox<Item>(
+  props: DefaultComboBoxProps<Item>
+): ReactNode {
   const {
     ListItem,
     Tooltip,
@@ -51,28 +98,20 @@ export function MultiSelectComboBox<Item>(
     tooltipPlacement,
     rootRef,
     listRef: listRefProp,
+    inputRef: inputRefProp,
     rootWidth,
     listWidth,
-    inputRef: inputRefProp,
     ...restProps
   } = props;
 
-  const { announce } = useAriaAnnouncer({ debounce: 1000 });
-
-  const expandButtonRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef(null);
+
+  const setInputRef = useForkRef(inputRef, inputRefProp);
   // Use callback ref as listRef could be null when it's closed
   const setListRef = useForkRef(listRef, listRefProp);
 
-  const { inputRef, listContext, inputProps, listProps, inputHelpers } =
-    useMultiSelectComboBox({
-      ...restProps,
-      expandButtonRef,
-    });
-
-  const { allowAnnouncement, disabled, value, ...restInputProps } = inputProps;
-  const { isListOpen, itemCount, itemToString, source, ...restListProps } =
-    listProps;
+  const { announce } = useAriaAnnouncer({ debounce: 1000 });
 
   const tooltipContext = useMemo(
     () => ({
@@ -83,6 +122,17 @@ export function MultiSelectComboBox<Item>(
     }),
     [Tooltip, tooltipEnterDelay, tooltipLeaveDelay, tooltipPlacement]
   );
+
+  const {
+    inputRef: setHookInputRef,
+    listContext,
+    inputProps,
+    listProps,
+  } = useComboBox(restProps);
+
+  const { allowAnnouncement, disabled, value, ...restInputProps } = inputProps;
+  const { isListOpen, itemCount, itemToString, source, ...restListProps } =
+    listProps;
 
   const firstItem = null;
 
@@ -95,7 +145,7 @@ export function MultiSelectComboBox<Item>(
     if (allowAnnouncementRef.current && value && firstItem) {
       announce(getAnnouncement(itemCount, firstItem));
     }
-  }, [value, firstItem, itemCount, announce]);
+  }, [firstItem, value, itemCount, announce]);
 
   const [maxListHeight, setMaxListHeight] = useState<number | undefined>(
     undefined
@@ -121,30 +171,24 @@ export function MultiSelectComboBox<Item>(
     }
   }, [rootRef, reference]);
 
-  const Window = useWindow();
-
   return (
     <>
-      <TooltipContext.Provider value={tooltipContext}>
-        <TokenizedInputBase
-          disabled={disabled}
-          expandButtonRef={expandButtonRef}
-          inputRef={useForkRef(inputRef, inputRefProp)}
-          value={value}
-          helpers={inputHelpers}
-          {...restInputProps}
-        />
-      </TooltipContext.Provider>
+      <Input
+        disabled={disabled}
+        ref={useForkRef(setInputRef, setHookInputRef)}
+        value={value}
+        {...restInputProps}
+      />
       {rootRef.current && isListOpen && (
         <Portal>
           <Window
-            ref={floating}
             style={{
               top: y ?? "",
               left: x ?? "",
               position: strategy,
               maxHeight: maxListHeight ?? "",
             }}
+            ref={floating}
           >
             <TooltipContext.Provider value={tooltipContext}>
               <ListStateContext.Provider value={listContext}>

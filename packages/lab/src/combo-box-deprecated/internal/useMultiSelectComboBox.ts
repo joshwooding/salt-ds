@@ -16,7 +16,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useList } from "../../list";
+import { useList } from "../../list-deprecated";
 import { ExpandButtonProps, useTokenizedInput } from "../../tokenized-input";
 import { defaultItemToString } from "../../tokenized-input/internal/defaultItemToString";
 import { useId, useIsFocusVisible, usePrevious } from "../../utils";

@@ -16,7 +16,7 @@ import { getDefaultFilter, getDefaultFilterRegex } from "../filterHelpers";
 import { isToggleList, usePopperStatus } from "./usePopperStatus";
 
 import { InputProps } from "../../input";
-import { useList } from "../../list";
+import { useList } from "../../list-deprecated";
 import { defaultItemToString } from "../../tokenized-input/internal/defaultItemToString";
 import { useId, useIsFocusVisible } from "../../utils";
 import { DefaultComboBoxProps } from "./DefaultComboBox";
@@ -202,6 +202,7 @@ export const useComboBox = <Item>(props: UseComboBoxProps<Item>) => {
   };
 
   const handleInputBlur = (event: FocusEvent<HTMLInputElement>) => {
+    console.log("BLUR");
     handleBlurVisible();
     setAllowAnnouncement(false);
 
@@ -241,6 +242,7 @@ export const useComboBox = <Item>(props: UseComboBoxProps<Item>) => {
   };
 
   const handleInputSelect = (event: SyntheticEvent<HTMLDivElement>) => {
+    console.log(`handleInputSelect setSelectionChanged = true`);
     setSelectionChanged(true);
     if (inputProps.onSelect) {
       inputProps.onSelect(event);
@@ -296,6 +298,7 @@ export const useComboBox = <Item>(props: UseComboBoxProps<Item>) => {
       if (restListProps.onKeyDown) {
         restListProps.onKeyDown(event as KeyboardEvent<HTMLDivElement>);
       }
+      console.log(`handleKeyDown ${event.key} setSelectionCHanged = false`);
       setSelectionChanged(false);
     }
 
@@ -306,6 +309,7 @@ export const useComboBox = <Item>(props: UseComboBoxProps<Item>) => {
   };
 
   const handleListClick = (event: MouseEvent) => {
+    console.log("handle list click");
     const inputEl = inputRef.current;
     if (inputEl != null) {
       inputEl.focus();
