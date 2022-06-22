@@ -1,6 +1,5 @@
 import {
   makePrefixer,
-  useCharacteristic,
   useForkRef,
   useIsomorphicLayoutEffect,
 } from "@jpmorganchase/uitk-core";
@@ -34,7 +33,7 @@ import { useListItem, useVirtualizedListItem } from "./useListItem";
 
 import "./List.css";
 
-const withBaseName = makePrefixer("uitkList");
+const withBaseName = makePrefixer("uitkListDeprecated");
 
 export interface ListboxContextProps<Item> {
   borderless?: boolean;
@@ -149,7 +148,8 @@ export const ListBase = forwardRef(function ListBase<Item>(
   const generatedId = useId(props.id);
   const defaultId = state.id ?? generatedId;
 
-  const sizeStackable = useCharacteristic("size", "stackable");
+  // Removed useCharacteristic here
+  const sizeStackable = "36px";
   const defaultItemHeight =
     sizeStackable === null ? 36 : parseInt(sizeStackable, 10);
 

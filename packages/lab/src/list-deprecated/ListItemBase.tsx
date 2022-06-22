@@ -30,7 +30,7 @@ export interface ListItemBaseProps extends HTMLAttributes<HTMLDivElement> {
   tooltipText?: string;
 }
 
-const withBaseName = makePrefixer("uitkListItem");
+const withBaseName = makePrefixer("uitkListItemDeprecated");
 
 // just to keep line number parity
 //

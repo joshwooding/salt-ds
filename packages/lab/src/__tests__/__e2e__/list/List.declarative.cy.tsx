@@ -1,10 +1,12 @@
-import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { List, ListItem, ListItemProps } from "@jpmorganchase/uitk-lab";
 
-import { List, ListItem, ListItemProps } from "../../list";
+const HIGHLIGHTED = "uitkListItem-highlighted";
+const DISABLED = "uitkListItem-disabled";
+const SELECTED = "aria-selected";
 
 describe("A declarative list", () => {
   it("should render all list items", () => {
-    const { queryByText } = render(
+    cy.mount(
       <List>
         <ListItem>list item 1</ListItem>
         <ListItem>list item 2</ListItem>
@@ -12,25 +14,25 @@ describe("A declarative list", () => {
       </List>
     );
 
-    expect(queryByText("list item 1")).toBeInTheDocument();
-    expect(queryByText("list item 2")).toBeInTheDocument();
-    expect(queryByText("list item 3")).toBeInTheDocument();
+    cy.findByText("list item 1").should("exist");
+    cy.findByText("list item 2").should("exist");
+    cy.findByText("list item 3").should("exist");
   });
 
-  describe("when item data is provided", () => {
+  describe.skip("when item data is provided", () => {
     it("should use the customized 'itemToString'", () => {
       const item = { name: "John", age: 25 };
       const itemToString: ListItemProps<typeof item>["itemToString"] = ({
         name,
       }) => name;
 
-      const { getByRole } = render(
+      cy.mount(
         <List>
           <ListItem item={item} itemToString={itemToString} />
         </List>
       );
 
-      expect(getByRole("option")).toHaveTextContent("John");
+      cy.findByRole("option").should("have.text", "John");
     });
 
     it("should ignore the data if it has children", () => {
@@ -39,7 +41,7 @@ describe("A declarative list", () => {
         name,
       }) => name;
 
-      const { getByRole } = render(
+      cy.mount(
         <List>
           <ListItem item={item} itemToString={itemToString}>
             Joe
@@ -47,52 +49,52 @@ describe("A declarative list", () => {
         </List>
       );
 
-      expect(getByRole("option")).toHaveTextContent("Joe");
+      cy.findByRole("option").should("have.text", "Joe");
     });
   });
 
   describe("when mouse is moved over an item", () => {
     it("should highlight that item", () => {
-      const { getAllByRole } = render(
-        <List>
+      cy.mount(
+        <List id="list">
           <ListItem>list item 1</ListItem>
           <ListItem>list item 2</ListItem>
           <ListItem>list item 3</ListItem>
         </List>
       );
-
-      const items = getAllByRole("option");
-
-      fireEvent.mouseMove(items[1]);
-
-      expect(items[1]).toHaveClass("uitkListItem-highlighted");
+      cy.get("#list-item-1").trigger("mousemove");
+      cy.get("#list-item-1").should("have.class", HIGHLIGHTED);
     });
   });
 
   describe("when clicked an item", () => {
     it("should select that item", () => {
-      const onChangeSpy = jest.fn();
-      const onSelectSpy = jest.fn();
+      const onSelectionChange = cy.stub().as("selectionChangeHandler");
+      const onSelect = cy.stub().as("selectHandler");
 
-      const { getAllByRole } = render(
-        <List onChange={onChangeSpy} onSelect={onSelectSpy}>
+      cy.mount(
+        <List
+          id="list"
+          onSelectionChange={onSelectionChange}
+          onSelect={onSelect}
+        >
           <ListItem>list item 1</ListItem>
           <ListItem>list item 2</ListItem>
           <ListItem>list item 3</ListItem>
         </List>
       );
 
-      const items = getAllByRole("option");
+      cy.get("#list-item-1").click();
+      cy.get("#list-item-1").should("have.attr", SELECTED);
 
-      fireEvent.click(items[1]);
-
-      expect(items[1]).toHaveClass("uitkListItem-selected");
-      expect(onChangeSpy).toHaveBeenCalledWith(
-        expect.anything(),
+      cy.get("@selectionChangeHandler").should(
+        "have.been.calledWith",
+        Cypress.sinon.match.any,
         "list item 2"
       );
-      expect(onSelectSpy).toHaveBeenCalledWith(
-        expect.anything(),
+      cy.get("@selectHandler").should(
+        "have.been.calledWith",
+        Cypress.sinon.match.any,
         "list item 2"
       );
     });
@@ -100,12 +102,11 @@ describe("A declarative list", () => {
 });
 
 describe("A declarative list with a disabled item", () => {
-  const selectionSpy = jest.fn();
-  let result: RenderResult;
-
+  let onSelect;
   beforeEach(() => {
-    result = render(
-      <List onChange={selectionSpy}>
+    onSelect = cy.stub().as("selectHandler");
+    cy.mount(
+      <List id="list" onChange={onSelect}>
         <ListItem>list item 1</ListItem>
         <ListItem disabled>list item 2</ListItem>
         <ListItem>list item 3</ListItem>
@@ -113,45 +114,32 @@ describe("A declarative list with a disabled item", () => {
     );
   });
 
-  afterEach(() => {
-    selectionSpy.mockClear();
-  });
-
   it("should render disabled style for the disabled item", () => {
-    const disabledItem = result.getAllByRole("option")[1];
-
-    expect(disabledItem).toHaveClass("uitkListItem-disabled");
+    cy.get("#list-item-1").should("have.class", DISABLED);
   });
 
   describe("when clicked on the disabled item", () => {
     it("should not select anything", () => {
-      const disabledItem = result.getAllByRole("option")[1];
-
-      fireEvent.click(disabledItem);
-
-      expect(disabledItem).not.toHaveClass("uitkListItem-selected");
-      expect(selectionSpy).not.toHaveBeenCalled();
+      cy.get("#list-item-1").click();
+      cy.get("#list-item-1").should("not.have.attr", SELECTED);
+      cy.get("@selectHandler").should("not.have.been.called");
     });
   });
 
   describe("when mouse is moved over the disabled item", () => {
     it("should not highlight that item", () => {
-      const disabledItem = result.getAllByRole("option")[1];
-
-      fireEvent.mouseMove(disabledItem);
-
-      expect(disabledItem).not.toHaveClass("uitkListItem-highlighted");
+      cy.get("#list-item-1").trigger("mousemove");
+      cy.get("#list-item-1").should("not.have.class", HIGHLIGHTED);
     });
   });
 });
 
 describe("A disabled declarative list", () => {
-  const selectionSpy = jest.fn();
-  let result: RenderResult;
-
+  let onSelect;
   beforeEach(() => {
-    result = render(
-      <List disabled onChange={selectionSpy}>
+    onSelect = cy.stub().as("selectHandler");
+    cy.mount(
+      <List id="list" disabled onChange={onSelect}>
         <ListItem>list item 1</ListItem>
         <ListItem>list item 2</ListItem>
         <ListItem>list item 3</ListItem>
@@ -159,21 +147,16 @@ describe("A disabled declarative list", () => {
     );
   });
 
-  afterEach(() => {
-    selectionSpy.mockClear();
-  });
-
   it("should have the disabled list style", () => {
-    expect(result.getByRole("listbox")).toHaveClass("uitkList-disabled");
+    cy.findByRole("listbox").should("have.class", "uitkList-disabled");
   });
 
   describe("when clicked its items", () => {
     it("should not select anything", () => {
-      result.getAllByRole("option").forEach((option) => {
-        fireEvent.click(option);
-      });
-
-      expect(selectionSpy).not.toHaveBeenCalled();
+      cy.get("#list-item-0").click();
+      cy.get("#list-item-1").click();
+      cy.get("#list-item-2").click();
+      cy.get("@selectHandler").should("not.have.been.called");
     });
   });
 });
