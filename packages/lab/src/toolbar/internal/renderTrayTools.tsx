@@ -4,33 +4,53 @@ import { FormField } from "../../form-field";
 
 import { OrientationShape } from "../ToolbarProps";
 import {
+  OverflowItem,
+  OverflowCollectionHookResult,
+} from "../../responsive/overflowTypes";
+import {
   extractResponsiveProps,
   isResponsiveAttribute,
-  ManagedItem,
-} from "../../responsive";
+} from "../../responsive/utils";
 
 const fieldProps = {
   fullWidth: false,
 };
 
 export const renderTrayTools = (
-  items: ReactElement[],
+  collectionHook: OverflowCollectionHookResult,
   isInsidePanel: boolean,
-  overflowedItems: ManagedItem[],
-  orientation: OrientationShape
+  overflowedItems: OverflowItem[],
+  orientation: OrientationShape,
+  renderOverflow: any,
+  collapse?: string | boolean,
+  collapsed?: boolean | string
 ) => {
   let index = -1;
 
-  return items.map((tool) => {
+  const children = collectionHook.data.filter(
+    (item) => !item.isOverflowIndicator
+  );
+
+  const childIsInstantCollapsed = !isInsidePanel && collapsed === true;
+  const getInstantChildren = (items: OverflowItem[]) =>
+    childIsInstantCollapsed ? renderOverflow(items) : items;
+
+  const items: OverflowItem[] =
+    collapse === "instant" ? getInstantChildren(collectionHook.data) : children;
+
+  return items.map((item) => {
     index += 1;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const props = item.element.props as any;
+
     const className = classnames(
       "tooltray-item",
-      tool.props.className,
-      "uitkEmphasisLow"
+      "uitlEmphasisLow",
+      props.className
     );
-    if (!React.isValidElement(tool)) return null;
     const overflowed =
-      overflowedItems.findIndex((item) => item.index === index) === -1
+      overflowedItems.findIndex((i) => i.index === index) === -1
         ? undefined
         : true;
 
@@ -40,20 +60,22 @@ export const renderTrayTools = (
       "data-index": index,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      "data-priority": tool.props["data-priority"] ?? 2,
+      "data-priority": props["data-priority"] ?? 2,
       "data-overflowed": overflowed,
+      id: item.id,
       orientation,
     };
-    if (tool.type === FormField) {
-      return React.cloneElement(tool, toolbarItemProps);
+    if (item.element.type === FormField) {
+      return React.cloneElement(item.element, toolbarItemProps);
     } else {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      if (Object.keys(tool.props).some(isResponsiveAttribute)) {
-        const [toolbarProps, props] = extractResponsiveProps(tool.props);
+      if (Object.keys(props).some(isResponsiveAttribute)) {
+        const [toolbarProps, restProps] = extractResponsiveProps(props);
         return (
           <FormField
             {...toolbarProps}
+            {...toolbarItemProps}
             {...fieldProps}
             className={className}
             data-index={index}
@@ -64,13 +86,14 @@ export const renderTrayTools = (
             withActivationIndicator={false}
           >
             {/* We clone here just to remove the responsive props */}
-            {React.cloneElement(tool, { ...props })}
+            {React.cloneElement(item.element, { ...restProps })}
           </FormField>
         );
       } else {
         return (
           <FormField
             {...fieldProps}
+            {...toolbarItemProps}
             className={className}
             data-index={index}
             data-overflowed={overflowed}
@@ -79,7 +102,9 @@ export const renderTrayTools = (
             key={index}
             data-orientation={orientation}
           >
-            {React.cloneElement(tool)}
+            {React.cloneElement(item.element, {
+              id: `tooltray-control-${toolbarItemProps.id}`,
+            })}
           </FormField>
         );
       }
