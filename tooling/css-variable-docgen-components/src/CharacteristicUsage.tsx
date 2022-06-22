@@ -49,7 +49,7 @@ export function CharacteristicUsage(
           {Object.entries(characteristicTokenMap)
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map(([name, tokens]) => (
-              <CharacteristicUsageRow name={name} tokens={tokens} />
+              <CharacteristicUsageRow key={name} name={name} tokens={tokens} />
             ))}
         </tbody>
       </TableWrapper>
