@@ -12,7 +12,7 @@ import {
 } from "react";
 import { ParentChildItem, SlideDirection } from "../ParentChildItem";
 import "./ParentChildLayout.css";
-import { useIsViewportLargerThanBreakpoint } from "../utils";
+import { useIsViewportLargerThanBreakpoint } from "../../utils";
 
 type FlexLayoutProps = ComponentPropsWithoutRef<typeof FlexLayout>;
 
