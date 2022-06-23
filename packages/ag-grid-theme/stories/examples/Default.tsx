@@ -23,11 +23,14 @@ const Default = (props: AgGridReactProps) => {
   };
 
   return (
-    <div style={{ height: 400, width: 600 }} className={"ag-theme-alpine"}>
+    <div style={{ height: 400, width: 600 }} className={"ag-theme-uitk-light"}>
       <AgGridReact
         columnDefs={dataGridExampleColumns}
         onGridReady={onGridReady}
         rowData={dataGridExampleData}
+        rowHeight={24}
+        headerHeight={24}
+        rowSelection="single"
         {...props}
       />
     </div>
