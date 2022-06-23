@@ -1,6 +1,5 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import "@jpmuitk/style/css/jpmuitk-css-spinner.css";
 /**
  * Example data can be found here
  * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies

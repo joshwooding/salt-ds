@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import { DataGrid } from "@jpmuitk/data-grid";
+import React, { useEffect, useRef, useState } from "react";
 
 /**
  * Example data can be found here
@@ -12,92 +11,86 @@ import dataGridExampleColumns from "../dependencies/dataGridExampleColumns";
 // pointing to static asset directory for caching
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import { AgGridReact, AgGridReactProps } from "ag-grid-react";
+import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 
-class PivotingColumnsExample extends Component {
-  constructor(props) {
-    super(props);
+const PivotingColumnsExample = function PivotingColumnsExample(
+  props: AgGridReactProps
+) {
+  const columnDefs: ColDef[] = [
+    {
+      headerName: "Name",
+      field: "name",
+      width: 120,
+      rowGroup: true,
+      enableRowGroup: true,
+    },
+    {
+      headerName: "Code",
+      field: "code",
+      width: 90,
+      pivot: true,
+      enablePivot: true,
+    },
+    {
+      headerName: "Capital",
+      field: "capital",
+      width: 110,
+      enablePivot: true,
+      enableRowGroup: true,
+    },
+    {
+      headerName: "Population",
+      field: "population",
+      width: 110,
+      enablePivot: true,
+      enableRowGroup: true,
+    },
+  ];
+  const defaultColDef: ColDef = {
+    resizable: true,
+    filter: true,
+    enableValue: true,
+    enableRowGroup: true,
+    enablePivot: true,
+    sortable: true,
+  };
+  const rowData = [];
 
-    this.state = {
-      columnDefs: [
-        {
-          headerName: "Name",
-          field: "name",
-          width: 120,
-          rowGroup: true,
-          enableRowGroup: true,
-        },
-        {
-          headerName: "Code",
-          field: "code",
-          width: 90,
-          pivot: true,
-          enablePivot: true,
-        },
-        {
-          headerName: "Capital",
-          field: "capital",
-          width: 110,
-          enablePivot: true,
-          enableRowGroup: true,
-        },
-        {
-          headerName: "Population",
-          field: "population",
-          width: 110,
-          enablePivot: true,
-          enableRowGroup: true,
-        },
-      ],
-      defaultColDef: {
-        resizable: true,
-        filter: true,
-        enableValue: true,
-        enableRowGroup: true,
-        enablePivot: true,
-        sortable: true,
-      },
-      rowData: [],
-    };
-  }
+  const [isGridReady, setGridReady] = useState(false);
+  const gridApiRef = useRef<GridApi>();
 
-  state = { isGridReady: false };
-
-  componentDidUpdate(prevProps, prevState) {
-    // Side effects (e.g. operating on the DOM) are only safe in `componentDidMount` or `componentDidUpdate`.
-    // See https://github.com/reactjs/rfcs/blob/master/text/0006-static-lifecycle-methods.md#external-function-calls-side-effects-mutations
-    // and https://reactjs.org/docs/react-component.html#componentdidupdate
-    if (prevState.isGridReady !== this.state.isGridReady) {
-      this.gridApi.sizeColumnsToFit();
+  useEffect(() => {
+    if (isGridReady) {
+      gridApiRef.current!.sizeColumnsToFit();
     }
-  }
+  }, [isGridReady]);
 
-  onGridReady = ({ api }) => {
-    this.gridApi = api;
-    this.setState({ isGridReady: true });
+  const onGridReady = ({ api }: GridReadyEvent) => {
+    gridApiRef.current = api;
+    setGridReady(true);
   };
 
-  render() {
-    return (
-      <div style={{ marginTop: 25 }}>
-        <DataGrid
-          columnDefs={this.state.columnDefs}
-          defaultColDef={this.state.defaultColDef}
-          enablePivot
-          onGridReady={this.onGridReady}
-          rowData={dataGridExampleData}
-          sideBar
-          {...this.props}
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <div style={{ marginTop: 25 }}>
+      <AgGridReact
+        columnDefs={columnDefs}
+        defaultColDef={defaultColDef}
+        // enablePivot
+        onGridReady={onGridReady}
+        rowData={dataGridExampleData}
+        sideBar
+        {...props}
+      />
+    </div>
+  );
+};
 
 PivotingColumnsExample.defaultProps = {
   columnDefs: dataGridExampleColumns,
   rowData: dataGridExampleData,
 };
 
-export default function PivotingColumns(props) {
+export default function PivotingColumns(props: AgGridReactProps) {
   return <PivotingColumnsExample {...props} />;
 }

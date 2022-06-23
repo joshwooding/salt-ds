@@ -2,22 +2,17 @@
   "name": "@jpmorganchase/uitk-ag-grid-theme",
   "version": "0.1.0",
   "license": "Apache-2.0",
-  "main": "src/index.ts",
-  "sideEffects": [
-    "**/*.css",
-    "**/*.css.js"
+  "style": "index.css",
+  "files": [
+    "/index.css"
   ],
-  "peerDependencies": {
-    "@types/react": ">=16.8.6",
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
+  "scripts": {
+    "build": "yarn node ./scripts/build.js"
   },
   "publishConfig": {
     "directory": "../../dist/jpmorganchase-uitk-ag-grid-theme"
+  },
+  "devDependencies": {
+    "sass": "^1.51.0"
   }
 }

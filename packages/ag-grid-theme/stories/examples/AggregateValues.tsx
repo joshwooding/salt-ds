@@ -14,11 +14,6 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
 import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 
-export default {
-  title: "Ag Grid Theme",
-  component: AgGridReact,
-};
-
 const AggregateValuesExample = function AggregateValuesExample(
   props: AgGridReactProps
 ) {

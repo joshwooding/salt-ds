@@ -10,11 +10,6 @@ import { ColDef, ColumnApi, GridApi, GridReadyEvent } from "ag-grid-community";
 import { Button } from "@jpmorganchase/uitk-core";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
 
-export default {
-  title: "Ag Grid Theme",
-  component: AgGridReact,
-};
-
 const AddRemoveRowsExample = function AddRemoveRowsExample(
   props: AgGridReactProps
 ) {
