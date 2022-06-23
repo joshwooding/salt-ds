@@ -1,7 +1,7 @@
 import { GridReadyEvent } from "ag-grid-community";
 import React from "react";
-// import "ag-grid-community/dist/styles/ag-grid.css";
-// import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import "../../index.css";
 
 /**
@@ -23,7 +23,7 @@ const Default = (props: AgGridReactProps) => {
   };
 
   return (
-    <div style={{ height: 400, width: 600 }} className={"ag-grid-alpine"}>
+    <div style={{ height: 400, width: 600 }} className={"ag-theme-alpine"}>
       <AgGridReact
         columnDefs={dataGridExampleColumns}
         onGridReady={onGridReady}
