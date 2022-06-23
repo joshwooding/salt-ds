@@ -112,6 +112,7 @@
     "vite-plugin-package-config": "^0.1.1",
     "vite-tsconfig-paths": "^3.4.1",
     "warning": "^4.0.3",
+    "watch": "^1.0.2",
     "webpack": "5"
   },
   "resolutions": {

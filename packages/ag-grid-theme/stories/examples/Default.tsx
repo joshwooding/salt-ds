@@ -23,7 +23,7 @@ const Default = (props: AgGridReactProps) => {
   };
 
   return (
-    <div style={{ height: 400, width: 600 }} className={"ag-theme-uitk-light"}>
+    <div style={{ height: 400, width: 600 }} className={"ag-theme-uitk"}>
       <AgGridReact
         columnDefs={dataGridExampleColumns}
         onGridReady={onGridReady}

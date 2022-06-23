@@ -3082,6 +3082,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jpmorganchase/ag-grid-theme-app@workspace:playground/ag-grid-theme-app":
+  version: 0.0.0-use.local
+  resolution: "@jpmorganchase/ag-grid-theme-app@workspace:playground/ag-grid-theme-app"
+  dependencies:
+    "@jpmorganchase/uitk-ag-grid-theme": ">=0.1.0"
+  languageName: unknown
+  linkType: soft
+
 "@jpmorganchase/root@workspace:.":
   version: 0.0.0-use.local
   resolution: "@jpmorganchase/root@workspace:."
@@ -3163,6 +3171,7 @@ __metadata:
     vite-plugin-package-config: ^0.1.1
     vite-tsconfig-paths: ^3.4.1
     warning: ^4.0.3
+    watch: ^1.0.2
     webpack: 5
   languageName: unknown
   linkType: soft
@@ -3196,16 +3205,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jpmorganchase/uitk-ag-grid-theme@workspace:packages/ag-grid-theme":
+"@jpmorganchase/uitk-ag-grid-theme@>=0.1.0, @jpmorganchase/uitk-ag-grid-theme@workspace:packages/ag-grid-theme":
   version: 0.0.0-use.local
   resolution: "@jpmorganchase/uitk-ag-grid-theme@workspace:packages/ag-grid-theme"
-  peerDependencies:
-    "@types/react": ">=16.8.6"
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
+  dependencies:
+    sass: ^1.51.0
   languageName: unknown
   linkType: soft
 
@@ -12797,6 +12801,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"exec-sh@npm:^0.2.0":
+  version: 0.2.2
+  resolution: "exec-sh@npm:0.2.2"
+  dependencies:
+    merge: ^1.2.0
+  checksum: 3ec5f99c8f7c4bebfeed1a797818f8754de00415d60a99f327e7f970834ca85252c449bf4b2efbff4c11e76eccc6b976a1956a5394a612d8e3d412185f59b0c0
+  languageName: node
+  linkType: hard
+
 "exec-sh@npm:^0.3.2":
   version: 0.3.6
   resolution: "exec-sh@npm:0.3.6"
@@ -18154,6 +18167,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"merge@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "merge@npm:1.2.1"
+  checksum: 2298c4fdcf64561f320b92338681f7ffcafafb579a6e294066ae3e7bd10ae25df363903d2f028072733b9f79a1f75d2b999aef98ad5d73de13641da39cda0913
+  languageName: node
+  linkType: hard
+
 "methods@npm:~1.1.2":
   version: 1.1.2
   resolution: "methods@npm:1.1.2"
@@ -23398,6 +23418,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sass@npm:^1.51.0":
+  version: 1.53.0
+  resolution: "sass@npm:1.53.0"
+  dependencies:
+    chokidar: ">=3.0.0 <4.0.0"
+    immutable: ^4.0.0
+    source-map-js: ">=0.6.2 <2.0.0"
+  bin:
+    sass: sass.js
+  checksum: 4bcb0617d6a4d1f2c089a1cb5c32f65a9ee874b23559f2742fab07cf8478fb74ad20c0730cf9f93915d7dbfc258901f89970674228c3ac91c3883a0a62a0ddab
+  languageName: node
+  linkType: hard
+
 "sass@npm:^1.52.3":
   version: 1.52.3
   resolution: "sass@npm:1.52.3"
@@ -26440,6 +26473,18 @@ __metadata:
   dependencies:
     loose-envify: ^1.0.0
   checksum: 4f2cb6a9575e4faf71ddad9ad1ae7a00d0a75d24521c193fa464f30e6b04027bd97aa5d9546b0e13d3a150ab402eda216d59c1d0f2d6ca60124d96cd40dfa35c
+  languageName: node
+  linkType: hard
+
+"watch@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "watch@npm:1.0.2"
+  dependencies:
+    exec-sh: ^0.2.0
+    minimist: ^1.2.0
+  bin:
+    watch: ./cli.js
+  checksum: 7ffe99f8bdbd3311d84bdd80d90e74536da90d6b64b339a73dce57884c50527881b83e507e49ab85212682350791999c296fbf2a136b579530046fb97ffb9526
   languageName: node
   linkType: hard
 
