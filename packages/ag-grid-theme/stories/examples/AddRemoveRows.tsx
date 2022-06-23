@@ -86,13 +86,15 @@ const AddRemoveRowsExample = function AddRemoveRowsExample(
 
   return (
     <div style={{ marginTop: 25 }}>
-      <AgGridReact
-        columnDefs={columnDefs}
-        defaultColDef={defaultColDef}
-        onGridReady={onGridReady}
-        onSelectionChanged={onSelectionChanged}
-        {...props}
-      />
+      <div style={{ height: 400, width: 820 }} className={"ag-theme-uitk"}>
+        <AgGridReact
+          columnDefs={columnDefs}
+          defaultColDef={defaultColDef}
+          onGridReady={onGridReady}
+          onSelectionChanged={onSelectionChanged}
+          {...props}
+        />
+      </div>
       <Button
         aria-label="add row"
         data-button="addRow"

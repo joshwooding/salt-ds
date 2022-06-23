@@ -1,5 +1,5 @@
-import { GridReadyEvent } from "ag-grid-community";
-import React from "react";
+import { GridApi, GridReadyEvent } from "ag-grid-community";
+import React, { useEffect, useRef, useState } from "react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import "../../index.css";
@@ -16,11 +16,26 @@ import dataGridExampleColumns from "../dependencies/dataGridExampleColumns";
 // import "ag-grid-community/dist/styles/ag-grid.css";
 // import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
+import { useAgGridRowHeight } from "../dependencies/useAgGridRowHeight";
 
 const Default = (props: AgGridReactProps) => {
+  const apiRef = useRef<GridApi>();
+  const [isGridReady, setGridReady] = useState(false);
+
   const onGridReady = ({ api }: GridReadyEvent) => {
+    apiRef.current = api;
     api.sizeColumnsToFit();
+    setGridReady(true);
   };
+
+  const rowHeight = useAgGridRowHeight();
+
+  console.log(`Rendering with rowHeight=${rowHeight}`);
+  // useEffect(() => {
+  //   if (isGridReady) {
+  //     apiRef.current!.onRowHeightChanged();
+  //   }
+  // }, [rowHeight, isGridReady]);
 
   return (
     <div style={{ height: 400, width: 600 }} className={"ag-theme-uitk"}>
@@ -28,8 +43,8 @@ const Default = (props: AgGridReactProps) => {
         columnDefs={dataGridExampleColumns}
         onGridReady={onGridReady}
         rowData={dataGridExampleData}
-        rowHeight={24}
-        headerHeight={24}
+        rowHeight={rowHeight}
+        headerHeight={rowHeight}
         rowSelection="single"
         {...props}
       />

@@ -26,6 +26,22 @@
   --uitk-ag-header-column-separator-color: var(--uitk-color-grey-100);
 }
 
+.uitk-density-high .ag-theme-uitk {
+  --uitk-ag-row-height: 24;
+}
+
+.uitk-density-medium .ag-theme-uitk {
+  --uitk-ag-row-height: 36;
+}
+
+.uitk-density-low .ag-theme-uitk {
+  --uitk-ag-row-height: 48;
+}
+
+.uitk-density-touch .ag-theme-uitk {
+  --uitk-ag-row-height: 60;
+}
+
 .ag-theme-uitk {
   @include ag-theme-alpine(
     (
@@ -227,10 +243,10 @@
       cell-widget-spacing: ag-derived(cell-horizontal-padding),
 
       // Height of grid rows
-      row-height: 24px, // ag-derived(grid-size, $times: 6, $plus: 1),
+      row-height: var(--uitk-ag-row-height),
 
       // Height of header rows
-      header-height: 24px, // ag-derived(row-height),
+      header-height: var(--uitk-ag-row-height),
 
       // Height of items in lists (example of lists are dropdown select inputs and column menu set filters)
       list-item-height: ag-derived(grid-size, $times: 5),
