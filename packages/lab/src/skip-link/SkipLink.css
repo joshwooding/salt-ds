@@ -1,0 +1,37 @@
+/* CSS Variables for the Skiplink */
+.uitkSkipLink {
+
+}
+
+
+.uitkSkipLink {
+  top:0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  display: block;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.uitkSkipLink:focus {
+ opacity: 1;
+  width: auto;
+  height: auto;
+  white-space: nowrap;
+  margin: 8px;
+  padding: 11px 12px 12px;
+  background: var(--uitkSkipLink-background, var(--uitk-actionable-primary-background));
+  color: var(--uitkSkipLink-color, var(--uitk-text-primary-foreground));
+}
+
+
+.uitkSkipLink-target {
+  outline-color: var(--uitk-focused-outlineColor);
+  outline-offset: var(--uitk-focused-outlineOffset);
+  outline-style: var(--uitk-focused-outlineStyle);
+  outline-width: var(--uitk-focused-outlineWidth);
+  position: absolute;
+}
+

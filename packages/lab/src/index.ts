@@ -36,6 +36,7 @@ export * from "./radio-button";
 export * from "./responsive";
 export * from "./scrim";
 export * from "./search-input";
+export * from "./skip-link";
 export * from "./slider";
 export * from "./spinner";
 export * from "./stepper-input";
