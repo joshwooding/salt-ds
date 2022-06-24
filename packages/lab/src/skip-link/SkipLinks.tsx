@@ -1,9 +1,13 @@
 import React, { forwardRef } from "react";
 import cx from "classnames";
 
-const renderListItem = (child: any) => <li key={child.key}>{child}</li>;
+import "./SkipLinks.css";
 
-const SkipLinks = forwardRef<HTMLUListElement, HTMLUListElement>(
+const renderListItem = (child: { key: React.Key | null | undefined }) => (
+  <li key={child.key}>{child}</li>
+);
+
+export const SkipLinks = forwardRef<HTMLUListElement, any>(
   ({ className, children, ...restProps }, ref) => {
     const clxPrefix = "uitk";
     return (

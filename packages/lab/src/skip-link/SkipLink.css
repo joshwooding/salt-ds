@@ -1,6 +1,8 @@
 /* CSS Variables for the Skiplink */
 .uitkSkipLink {
-
+  --skipLink--padding: var(--uitkSkipLink-padding, var(--uitk-size-unit));
+  --skipLink--background: var(--uitkSkipLink-background, var(--uitk-actionable-primary-background));
+  --skipLink-color: var(--uitkSkipLink-color, var(--uitk-text-primary-foreground));
 }
 
 
@@ -21,9 +23,9 @@
   height: auto;
   white-space: nowrap;
   margin: 8px;
-  padding: 11px 12px 12px;
-  background: var(--uitkSkipLink-background, var(--uitk-actionable-primary-background));
-  color: var(--uitkSkipLink-color, var(--uitk-text-primary-foreground));
+  padding: var(--skipLink--padding);
+  background: var(--skipLink--background);
+  color: var(--skipLink-color);
 }
 
 
