@@ -17,6 +17,7 @@ import dataGridExampleColumns from "../dependencies/dataGridExampleColumns";
 // import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
 import { useAgGridRowHeight } from "../dependencies/useAgGridRowHeight";
+import { useDensity } from "@jpmorganchase/uitk-core";
 
 const Default = (props: AgGridReactProps) => {
   const apiRef = useRef<GridApi>();
@@ -29,16 +30,21 @@ const Default = (props: AgGridReactProps) => {
   };
 
   const rowHeight = useAgGridRowHeight();
+  const density = useDensity();
+  const className = `ag-theme-uitk-${density}`;
 
-  console.log(`Rendering with rowHeight=${rowHeight}`);
-  // useEffect(() => {
-  //   if (isGridReady) {
-  //     apiRef.current!.onRowHeightChanged();
-  //   }
-  // }, [rowHeight, isGridReady]);
+  console.log(
+    `Rendering with rowHeight=${rowHeight}; className: "${className}"`
+  );
+  useEffect(() => {
+    if (isGridReady) {
+      console.log(`Resetting row heights`);
+      apiRef.current!.resetRowHeights();
+    }
+  }, [rowHeight, isGridReady]);
 
   return (
-    <div style={{ height: 400, width: 600 }} className={"ag-theme-uitk-medium"}>
+    <div style={{ height: 400, width: 600 }} className={className}>
       <AgGridReact
         columnDefs={dataGridExampleColumns}
         onGridReady={onGridReady}

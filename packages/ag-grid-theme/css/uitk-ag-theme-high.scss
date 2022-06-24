@@ -280,19 +280,33 @@ $ag-theme-uitk-params: (
   popup-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3),
 );
 
-$ag-theme-uitk-params-medium: ag-process-theme-variables(
-(
-  // Height of grid rows
+$ag-theme-uitk-params-medium: ag-process-theme-variables((
   row-height: 36, // var(--uitk-ag-row-height),
-
-  // Height of header rows
   header-height: 36, // var(--uitk-ag-row-height),
 ), $ag-theme-uitk-params);
 
-.ag-theme-uitk {
+$ag-theme-uitk-params-low: ag-process-theme-variables((
+  row-height: 48, // var(--uitk-ag-row-height),
+  header-height: 48, // var(--uitk-ag-row-height),
+), $ag-theme-uitk-params);
+
+$ag-theme-uitk-params-touch: ag-process-theme-variables((
+  row-height: 60, // var(--uitk-ag-row-height),
+  header-height: 60, // var(--uitk-ag-row-height),
+), $ag-theme-uitk-params);
+
+.ag-theme-uitk-high {
   @include ag-theme-alpine($ag-theme-uitk-params);
 }
 
 .ag-theme-uitk-medium {
   @include ag-theme-alpine($ag-theme-uitk-params-medium);
+}
+
+.ag-theme-uitk-low {
+  @include ag-theme-alpine($ag-theme-uitk-params-low);
+}
+
+.ag-theme-uitk-touch {
+  @include ag-theme-alpine($ag-theme-uitk-params-touch);
 }
