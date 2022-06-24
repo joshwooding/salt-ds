@@ -1,42 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@jpmorganchase/uitk-core";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
 import dataGridExampleData from "../dependencies/dataGridExampleData";
 import customFilterExampleColumns from "../dependencies/customFilterExampleColumns";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { GridApi, GridReadyEvent } from "ag-grid-community";
+import "../../uitk-ag-theme.css";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const CustomFilterExample = function CustomFilterExample(
   props: AgGridReactProps
 ) {
   const [hasSavedState, setHasSavedState] = useState(true);
-  const [isGridReady, setGridReady] = useState(false);
+  const { api, isGridReady, agGridProps, containerProps } = useAgGridHelpers();
 
-  const gridApiRef = useRef<GridApi>();
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current?.sizeColumnsToFit();
+      api?.sizeColumnsToFit();
     }
   }, [isGridReady]);
 
-  const onGridReady = (event: GridReadyEvent) => {
-    gridApiRef.current = event.api;
-    setGridReady(true);
-  };
-
   const handlePopMt100kClick = () => {
-    const popMt100kComponent =
-      gridApiRef.current!.getFilterInstance("population")!;
-    gridApiRef.current!.setFilterModel(null);
+    const popMt100kComponent = api!.getFilterInstance("population")!;
+    api!.setFilterModel(null);
 
     popMt100kComponent.setModel({
       type: "greaterThan",
@@ -44,14 +28,13 @@ const CustomFilterExample = function CustomFilterExample(
       filterTo: null,
     });
 
-    gridApiRef.current!.onFilterChanged();
+    api!.onFilterChanged();
     setHasSavedState(false);
   };
 
   const handlePopLt100kClick = () => {
-    const popLt100kComponent =
-      gridApiRef.current!.getFilterInstance("population")!;
-    gridApiRef.current!.setFilterModel(null);
+    const popLt100kComponent = api!.getFilterInstance("population")!;
+    api!.setFilterModel(null);
 
     popLt100kComponent.setModel({
       type: "lessThan",
@@ -59,34 +42,34 @@ const CustomFilterExample = function CustomFilterExample(
       filterTo: null,
     });
 
-    gridApiRef.current!.onFilterChanged();
+    api!.onFilterChanged();
     setHasSavedState(false);
   };
 
   const filterNewYork = () => {
-    const filterNewYork = gridApiRef.current!.getFilterInstance("name")!;
-    gridApiRef.current!.setFilterModel(null);
+    const filterNewYork = api!.getFilterInstance("name")!;
+    api!.setFilterModel(null);
     filterNewYork.setModel({
       type: "equals",
       filter: "New York",
       filterTo: null,
     });
-    gridApiRef.current!.onFilterChanged();
+    api!.onFilterChanged();
     setHasSavedState(false);
   };
 
   const saveState = () => {
-    (window as any).filterState = gridApiRef.current!.getFilterModel();
+    (window as any).filterState = api!.getFilterModel();
     setHasSavedState(false);
   };
 
   const restoreState = () => {
-    gridApiRef.current!.setFilterModel((window as any).filterState);
+    api!.setFilterModel((window as any).filterState);
     setHasSavedState(true);
   };
 
   const clearState = () => {
-    gridApiRef.current!.setFilterModel(null);
+    api!.setFilterModel(null);
     setHasSavedState(true);
   };
 
@@ -109,11 +92,16 @@ const CustomFilterExample = function CustomFilterExample(
           Clear Stored Filter
         </Button>
       </div>
-      <AgGridReact
-        defaultColDef={{ floatingFilter: true }}
-        onGridReady={onGridReady}
-        {...props}
-      />
+      <div
+        style={{ height: 800, width: 800, marginTop: 25 }}
+        {...containerProps}
+      >
+        <AgGridReact
+          defaultColDef={{ floatingFilter: true }}
+          {...agGridProps}
+          {...props}
+        />
+      </div>
     </div>
   );
 };

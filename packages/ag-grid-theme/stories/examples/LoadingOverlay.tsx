@@ -1,26 +1,11 @@
-import React, {
-  Component,
-  CSSProperties,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import "../../uitk-ag-theme.css";
 import dataGridExampleData from "../dependencies/dataGridExampleData";
 import dataGridExampleColumns from "../dependencies/dataGridExampleColumns";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { GridApi, GridReadyEvent } from "ag-grid-community";
 import { Card } from "@jpmorganchase/uitk-core";
 import { Spinner } from "@jpmorganchase/uitk-lab";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const LoadingOverlayExample = function LoadingOverlayExample(
   props: AgGridReactProps
@@ -31,27 +16,21 @@ const LoadingOverlayExample = function LoadingOverlayExample(
   const [width, setWidth] = useState<number | string>("100%");
   const [height, setHeight] = useState<number | string>("100%");
 
-  const gridRef = useRef<AgGridReact>(null);
-  const gridApiRef = useRef<GridApi>();
+  const gridRef = useRef<HTMLDivElement>(null);
 
-  const [isGridReady, setGridReady] = useState(false);
+  const { api, agGridProps, containerProps, isGridReady } = useAgGridHelpers();
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current!.sizeColumnsToFit();
+      api!.sizeColumnsToFit();
+      const { offsetTop, clientWidth, offsetLeft, clientHeight } =
+        gridRef.current!;
+      setTop(offsetTop);
+      setLeft(offsetLeft);
+      setHeight(clientHeight);
+      setWidth(clientWidth);
     }
   }, [isGridReady]);
-
-  const onGridReady = ({ api }: GridReadyEvent) => {
-    gridApiRef.current = api;
-    // const { offsetTop, clientWidth, offsetLeft, clientHeight } =
-    //   gridRef.current!;
-    // setGridReady(true);
-    // setTop(offsetTop);
-    // setLeft(offsetLeft);
-    // setHeight(clientHeight);
-    // setWidth(clientWidth);
-  };
 
   const getModalStyle: CSSProperties = {
     position: "absolute",
@@ -88,17 +67,14 @@ const LoadingOverlayExample = function LoadingOverlayExample(
   return (
     <div style={{ marginTop: 25, position: "relative" }}>
       {modal}
-      <AgGridReact
+      <div
+        style={{ height: 800, width: 800 }}
+        {...containerProps}
         ref={gridRef}
         tabIndex={-1}
-        // containerProps={{
-        //   ref: gridRef,
-        //   tabIndex: -1,
-        //   'aria-hidden': true
-        // }}
-        onGridReady={onGridReady}
-        {...props}
-      />
+      >
+        <AgGridReact {...agGridProps} {...props} />
+      </div>
     </div>
   );
 };

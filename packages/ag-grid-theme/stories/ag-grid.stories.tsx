@@ -22,7 +22,7 @@ export {
   ColumnSpanning,
   ContextMenu,
   CustomFilter,
-  CustomPagination,
+  // CustomPagination, TODO
   DragRowOrder,
   ExcelExport,
   FloatingFilter,

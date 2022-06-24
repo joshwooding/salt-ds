@@ -16,20 +16,12 @@ const pgkNodeModules = path.resolve(__dirname, "../../../node_modules/");
 function buildStyles(entry) {
   const sourceFileName = path.basename(entry);
   const outputFileName = sourceFileName.replace(/\.scss$/, ".css");
-  console.log(
-    `sourceFileName: "${sourceFileName}". outputFileName: "${outputFileName}"`
-  );
-
   const outputFolder = path.join(
     __dirname,
     "../../../dist/jpmorganchase-uitk-ag-grid-theme"
   );
-  console.log(`outputFolder: ${outputFolder}`);
-
   const outputName = path.join(outputFolder, sourceFileName);
-
   del.sync([outputName], { force: true });
-
   const result = sass.compile(entry, {
     // https://sass-lang.com/documentation/js-api/interfaces/FileImporter
     importers: [

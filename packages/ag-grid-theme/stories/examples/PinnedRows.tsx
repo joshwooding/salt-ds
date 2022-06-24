@@ -1,27 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
+import "../../uitk-ag-theme.css";
 import dataGridExampleData from "../dependencies/dataGridExampleData";
 import dataGridExampleColumns from "../dependencies/dataGridExampleColumns";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { GridApi, GridReadyEvent } from "ag-grid-community";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const sumReducer = (acc: number, n: number) => acc + n;
 const minReducer = (acc: number, n: number) => (n < acc ? n : acc);
 const maxReducer = (acc: number, n: number) => (n > acc ? n : acc);
 
-const sum = (vals: number[]) => vals.reduce(sumReducer, 0);
-const min = (vals: number[]) => vals.reduce(minReducer, 0);
-const max = (vals: number[]) => vals.reduce(maxReducer, 0);
+const sum = (source: number[]) => source.reduce(sumReducer, 0);
+const min = (source: number[]) => source.reduce(minReducer, 0);
+const max = (source: number[]) => source.reduce(maxReducer, 0);
 
 export const aggregates = {
   sum,
@@ -52,19 +43,13 @@ type PinnedRowsExampleProps = AgGridReactProps & {
 const PinnedRowsExample = function PinnedRowsExample(
   props: PinnedRowsExampleProps
 ) {
-  const [isGridReady, setGridReady] = useState(false);
-  const gridApiRef = useRef<GridApi>();
+  const { isGridReady, api, agGridProps, containerProps } = useAgGridHelpers();
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current!.sizeColumnsToFit();
+      api!.sizeColumnsToFit();
     }
   }, [isGridReady]);
-
-  const onGridReady = ({ api }: GridReadyEvent) => {
-    gridApiRef.current = api;
-    setGridReady(true);
-  };
 
   const getColumnData = () => {
     return fields(props.aggregateColumn, props.rowData!).filter(
@@ -93,9 +78,9 @@ const PinnedRowsExample = function PinnedRowsExample(
   const pinnedBottomRowData = props.showFooter ? footerRow() : undefined;
   const pinnedTopRowData = props.showHeader ? getHeaderRow() : undefined;
   return (
-    <div style={{ marginTop: 25 }}>
+    <div style={{ marginTop: 25, height: 800, width: 800 }} {...containerProps}>
       <AgGridReact
-        onGridReady={onGridReady}
+        {...agGridProps}
         {...props}
         pinnedBottomRowData={pinnedBottomRowData}
         pinnedTopRowData={pinnedTopRowData}

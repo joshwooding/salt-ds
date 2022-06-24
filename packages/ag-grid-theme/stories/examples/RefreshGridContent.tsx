@@ -1,57 +1,48 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
+import React, { useEffect } from "react";
+import "../../uitk-ag-theme.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { GridApi, GridReadyEvent } from "ag-grid-community";
 import { Button } from "@jpmorganchase/uitk-core";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const RefreshGridContentExample = function RefreshGridContentExample(
   props: AgGridReactProps
 ) {
-  const [isGridReady, setGridReady] = useState(false);
-  const apiRef = useRef<GridApi>();
+  const { agGridProps, containerProps, isGridReady, api } = useAgGridHelpers();
+
   useEffect(() => {
     if (isGridReady) {
-      apiRef.current!.sizeColumnsToFit();
+      api!.sizeColumnsToFit();
     }
   }, [isGridReady]);
 
-  const onGridReady = ({ api }: GridReadyEvent) => {
-    apiRef.current = api;
-    setGridReady(true);
-  };
-
   const onUpdateSomeValues = () => {
-    const rowCount = apiRef.current!.getDisplayedRowCount();
+    const rowCount = api!.getDisplayedRowCount();
     for (let i = 0; i < 20; i++) {
       const row = Math.floor(Math.random() * rowCount);
-      const rowNode = apiRef.current!.getDisplayedRowAtIndex(row)!;
+      const rowNode = api!.getDisplayedRowAtIndex(row)!;
       const col = ["a", "b", "c", "d", "e", "f"][i % 6];
       rowNode.setDataValue(col, Math.floor(Math.random() * 10000));
     }
   };
 
   const onFlashOneCell = () => {
-    const rowNode = apiRef.current!.getDisplayedRowAtIndex(4)!;
-    apiRef.current!.flashCells({
+    const rowNode = api!.getDisplayedRowAtIndex(4)!;
+    api!.flashCells({
       rowNodes: [rowNode],
       columns: ["c"],
     });
   };
 
   const onFlashTwoColumns = () => {
-    apiRef.current!.flashCells({
+    api!.flashCells({
       columns: ["c", "d"],
     });
   };
 
   const onFlashTwoRows = () => {
-    const rowNode1 = apiRef.current!.getDisplayedRowAtIndex(4)!;
-    const rowNode2 = apiRef.current!.getDisplayedRowAtIndex(5)!;
-    apiRef.current!.flashCells({
+    const rowNode1 = api!.getDisplayedRowAtIndex(4)!;
+    const rowNode2 = api!.getDisplayedRowAtIndex(5)!;
+    api!.flashCells({
       rowNodes: [rowNode1, rowNode2],
     });
   };
@@ -65,11 +56,14 @@ const RefreshGridContentExample = function RefreshGridContentExample(
       <Button onClick={onFlashTwoRows}>Flash Two Rows</Button>
       &nbsp;&nbsp;&nbsp;
       <Button onClick={onFlashTwoColumns}>Flash Two Columns</Button>
-      <div style={{ marginTop: 25 }}>
+      <div
+        style={{ marginTop: 25, height: 800, width: 800 }}
+        {...containerProps}
+      >
         <AgGridReact
           columnDefs={props.columnDefs}
           masterDetail
-          onGridReady={onGridReady}
+          {...agGridProps}
           {...props}
         />
       </div>

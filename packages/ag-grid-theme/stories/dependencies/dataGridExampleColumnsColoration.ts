@@ -4,8 +4,10 @@ const dataGridExampleColumnsColoration = [
   {
     headerName: "Name",
     field: "name",
-    // TODO
-    // cellStyle: { color: color.grey900, backgroundColor: color.teal50 }
+    cellStyle: {
+      color: "var(--uitk-color-grey-90)",
+      backgroundColor: "var(--uitk-color-teal-100)",
+    },
   },
   {
     headerName: "Code",
@@ -18,9 +20,10 @@ const dataGridExampleColumnsColoration = [
     field: "capital",
     cellStyle: (params: CellClassParams) => {
       if (params.value === "Atlanta") {
-        return {};
-        // TODO
-        // return { color: color.grey900, backgroundColor: color.orange100 };
+        return {
+          color: "var(--uitk-color-grey-900)",
+          backgroundColor: "var(--uitk-color-orange-100)",
+        };
       } else {
         return null;
       }

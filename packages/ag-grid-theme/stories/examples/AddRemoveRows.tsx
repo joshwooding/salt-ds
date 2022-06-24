@@ -1,45 +1,34 @@
-import React, { Component, useRef, useState } from "react";
+import React, { useState } from "react";
 
 import dataGridExampleColumns from "../dependencies/dataGridExampleColumns";
 import dataGridExampleData from "../dependencies/dataGridExampleData";
 // ideally these css files would be loaded from a link tag
 // pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ColDef, ColumnApi, GridApi, GridReadyEvent } from "ag-grid-community";
+import { ColDef } from "ag-grid-community";
 import { Button } from "@jpmorganchase/uitk-core";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
+import "../../uitk-ag-theme.css";
 
 const AddRemoveRowsExample = function AddRemoveRowsExample(
   props: AgGridReactProps
 ) {
-  const [isGridReady, setIsGridReady] = useState<boolean>(false);
-  const [columnDefs, setColumnDefs] = useState<ColDef[]>(
-    dataGridExampleColumns
-  );
-  const [defaultColDef, setDefaultColDef] = useState<ColDef>({
+  const { containerProps, agGridProps, api, columnApi } = useAgGridHelpers();
+
+  const [columnDefs] = useState<ColDef[]>(dataGridExampleColumns);
+
+  const [defaultColDef] = useState<ColDef>({
     editable: true,
   });
   const [disabledButton, setDisabledButton] = useState<boolean>(true);
-
-  const gridApiRef = useRef<GridApi>();
-  const columnApiRef = useRef<ColumnApi>();
-
-  const onGridReady = (event: GridReadyEvent) => {
-    const { api, columnApi } = event;
-
-    setIsGridReady(true);
-    gridApiRef.current = api;
-    columnApiRef.current = columnApi;
-  };
 
   const handleAddRow = () => {
     const addRowButton = document.querySelector(
       '[data-button="addRow"]'
     ) as HTMLButtonElement;
     addRowButton.blur();
-    gridApiRef.current!.ensureIndexVisible(0, "top");
-    gridApiRef.current!.updateRowData({
+    api!.ensureIndexVisible(0, "top");
+    api!.updateRowData({
       add: [
         {
           name: "",
@@ -50,10 +39,10 @@ const AddRemoveRowsExample = function AddRemoveRowsExample(
       ],
       addIndex: 0,
     });
-    const firstColumn = columnApiRef.current!.getAllColumns()![0].getColId();
-    gridApiRef.current!.setFocusedCell(0, firstColumn, "top");
+    const firstColumn = columnApi!.getAllColumns()![0].getColId();
+    api!.setFocusedCell(0, firstColumn, "top");
     setTimeout(() => {
-      gridApiRef.current!.startEditingCell({
+      api!.startEditingCell({
         rowIndex: 0,
         colKey: firstColumn,
       });
@@ -61,15 +50,12 @@ const AddRemoveRowsExample = function AddRemoveRowsExample(
   };
 
   const handleRemoveSelected = () => {
-    const gridApi = gridApiRef.current!;
-    const columnApi = columnApiRef.current!;
-
-    const rowNumber = gridApi.getSelectedNodes()[0].rowIndex as number;
-    const firstColumn = columnApi.getAllColumns()![0].getColId();
-    gridApi.setFocusedCell(rowNumber, firstColumn, "top");
-    gridApi.updateRowData({ remove: gridApi.getSelectedRows() });
+    const rowNumber = api!.getSelectedNodes()[0].rowIndex as number;
+    const firstColumn = columnApi!.getAllColumns()![0].getColId();
+    api!.setFocusedCell(rowNumber, firstColumn, "top");
+    api!.updateRowData({ remove: api!.getSelectedRows() });
     setTimeout(() => {
-      gridApi.startEditingCell({
+      api!.startEditingCell({
         rowIndex: rowNumber,
         colKey: firstColumn,
       });
@@ -77,21 +63,22 @@ const AddRemoveRowsExample = function AddRemoveRowsExample(
   };
 
   const onSelectionChanged = () => {
-    const gridApi = gridApiRef.current!;
-
-    gridApi.getSelectedRows().length !== 0
+    api!.getSelectedRows().length !== 0
       ? setDisabledButton(false)
       : setDisabledButton(true);
   };
 
   return (
     <div style={{ marginTop: 25 }}>
-      <div style={{ height: 400, width: 820 }} className={"ag-theme-uitk"}>
+      <div
+        style={{ height: 400, width: 820, marginBottom: 25 }}
+        {...containerProps}
+      >
         <AgGridReact
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
-          onGridReady={onGridReady}
           onSelectionChanged={onSelectionChanged}
+          {...agGridProps}
           {...props}
         />
       </div>

@@ -1,23 +1,14 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
+import React, { useEffect, useState } from "react";
+import "../../uitk-ag-theme.css";
 import dataGridExampleData from "../dependencies/dataGridExampleData";
-// import dataGridExampleColumns from './dependencies/dataGridExampleColumns';
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
+import { ColDef } from "ag-grid-community";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const AggregateValuesExample = function AggregateValuesExample(
   props: AgGridReactProps
 ) {
-  const [columnDefs, setColumnDefs] = useState<ColDef[]>([
+  const [columnDefs] = useState<ColDef[]>([
     {
       headerName: "Name",
       field: "name",
@@ -66,38 +57,31 @@ const AggregateValuesExample = function AggregateValuesExample(
       width: 90,
     },
   ]);
-  const [defaultColDef, setDefaultColDef] = useState({
+
+  const [defaultColDef] = useState({
     enableValue: true,
     enableRowGroup: true,
     enablePivot: true,
     sortable: true,
     filter: true,
   });
-  const [rowData, setRowData] = useState([]);
 
-  const [isGridReady, setIsGridReady] = useState(false);
-
-  const gridApiRef = useRef<GridApi>();
+  const { api, agGridProps, containerProps, isGridReady } = useAgGridHelpers();
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current?.sizeColumnsToFit();
+      api?.sizeColumnsToFit();
     }
   }, [isGridReady]);
 
-  const onGridReady = (event: GridReadyEvent) => {
-    gridApiRef.current = event.api;
-    setIsGridReady(true);
-  };
-
   return (
-    <div style={{ marginTop: 25 }}>
+    <div style={{ height: 600, width: 800, marginTop: 25 }} {...containerProps}>
       <AgGridReact
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
-        onGridReady={onGridReady}
         rowData={dataGridExampleData}
         sideBar
+        {...agGridProps}
         {...props}
       />
     </div>

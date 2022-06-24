@@ -1,18 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
+import React, { useEffect } from "react";
 import dataGridExampleData from "../dependencies/dataGridExampleData";
 import dataGridInfiniteScrollExampleColumns from "../dependencies/dataGridInfiniteScrollExampleColumns";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { GridApi, GridReadyEvent } from "ag-grid-community";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
+import "../../uitk-ag-theme.css";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const generateData = function generateData<T extends { name: string }>(
   lst: T[]
@@ -33,34 +24,28 @@ const dataSourceRows = generateData(dataGridExampleData);
 const InfiniteScrollExample = function InfiniteScrollExample(
   props: AgGridReactProps
 ) {
-  const [isGridReady, setGridReady] = useState(false);
-  const gridApiRef = useRef<GridApi>();
+  const { isGridReady, agGridProps, containerProps, api } = useAgGridHelpers();
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current!.sizeColumnsToFit();
+      api!.sizeColumnsToFit();
+
+      api!.setDatasource({
+        getRows: ({ startRow, endRow, successCallback }) => {
+          setTimeout(() => {
+            successCallback(
+              dataSourceRows.slice(startRow, endRow),
+              dataSourceRows.length
+            );
+          }, 500);
+        },
+      });
     }
   }, [isGridReady]);
 
-  const onGridReady = ({ api }: GridReadyEvent) => {
-    gridApiRef.current = api;
-    setGridReady(true);
-
-    api.setDatasource({
-      getRows: ({ startRow, endRow, successCallback }) => {
-        setTimeout(() => {
-          successCallback(
-            dataSourceRows.slice(startRow, endRow),
-            dataSourceRows.length
-          );
-        }, 500);
-      },
-    });
-  };
-
   return (
-    <div style={{ marginTop: 25 }}>
-      <AgGridReact onGridReady={onGridReady} {...props} />
+    <div style={{ marginTop: 25, height: 800, width: 800 }} {...containerProps}>
+      <AgGridReact {...agGridProps} {...props} />
     </div>
   );
 };
@@ -68,7 +53,7 @@ const InfiniteScrollExample = function InfiniteScrollExample(
 InfiniteScrollExample.defaultProps = {
   columnDefs: dataGridInfiniteScrollExampleColumns,
   components: {
-    loadingRenderer(params) {
+    loadingRenderer(params: any) {
       if (params.value !== undefined) {
         return params.value;
       } else {

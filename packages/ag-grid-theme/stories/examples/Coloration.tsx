@@ -1,38 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
+import React, { useEffect } from "react";
+import "../../uitk-ag-theme.css";
 import dataGridExampleData from "../dependencies/dataGridExampleData";
 import dataGridExampleColumnsColoration from "../dependencies/dataGridExampleColumnsColoration";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { GridApi, GridReadyEvent } from "ag-grid-community";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const ColorationExample = function ColorationExample(props: AgGridReactProps) {
-  const [isGridReady, setGridReady] = useState<boolean>(false);
-
-  const gridApiRef = useRef<GridApi>();
+  const { api, agGridProps, containerProps, isGridReady } = useAgGridHelpers();
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current?.sizeColumnsToFit();
+      api?.sizeColumnsToFit();
     }
   }, [isGridReady]);
 
-  const onGridReady = (event: GridReadyEvent) => {
-    gridApiRef.current = event.api;
-    setGridReady(true);
-  };
-
   return (
-    <div style={{ marginTop: 25 }}>
-      <AgGridReact onGridReady={onGridReady} {...props} />
+    <div style={{ height: 800, width: 800, marginTop: 25 }} {...containerProps}>
+      <AgGridReact {...agGridProps} {...props} />
     </div>
   );
 };

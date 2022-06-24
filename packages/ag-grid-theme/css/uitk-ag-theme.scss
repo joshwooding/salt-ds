@@ -2,7 +2,10 @@
 @import "~ag-grid-community/src/styles/ag-grid.scss";
 @import "~ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine-mixin.scss";
 
-.uitk-light .ag-theme-uitk {
+.uitk-light .ag-theme-uitk-high,
+.uitk-light .ag-theme-uitk-medium,
+.uitk-light .ag-theme-uitk-low,
+.uitk-light .ag-theme-uitk-touch {
   --uitk-ag-foreground-color: var(--uitk-color-black);
   --uitk-ag-disabled-foreground-color: var(--uitk-color-black); // TODO
   --uitk-ag-header-foreground-color: var(--uitk-color-grey-300);
@@ -13,7 +16,10 @@
   --uitk-ag-header-column-separator-color: var(--uitk-color-grey-90);
 }
 
-.uitk-dark .ag-theme-uitk {
+.uitk-dark .ag-theme-uitk-high,
+.uitk-dark .ag-theme-uitk-medium,
+.uitk-dark .ag-theme-uitk-low,
+.uitk-dark .ag-theme-uitk-touch {
   --uitk-ag-foreground-color: var(--uitk-color-white);
   --uitk-ag-disabled-foreground-color: var(--uitk-color-white); // TODO
   --uitk-ag-header-foreground-color: var(--uitk-color-grey-50);
@@ -23,22 +29,6 @@
   --uitk-ag-row-border-color: var(--uitk-color-grey-500);
   --uitk-ag-header-column-separator-color: var(--uitk-color-grey-100);
 }
-
-//.uitk-density-high .ag-theme-uitk {
-//  --uitk-ag-row-height: 24px;
-//}
-//
-//.uitk-density-medium .ag-theme-uitk {
-//  --uitk-ag-row-height: 36px;
-//}
-//
-//.uitk-density-low .ag-theme-uitk {
-//  --uitk-ag-row-height: 48px;
-//}
-//
-//.uitk-density-touch .ag-theme-uitk {
-//  --uitk-ag-row-height: 60px;
-//}
 
 $ag-theme-uitk-params: (
   // Colour of text and icons in primary UI elements like menus
@@ -105,7 +95,6 @@ $ag-theme-uitk-params: (
   // Colour and thickness of the border drawn under selected tabs, including menus and tool panels
   selected-tab-underline-color: ag-derived(range-selection-border-color),
   selected-tab-underline-width: 0,
-
   selected-tab-underline-transition-speed: null,
 
   // Background colour for cells that provide categories to the current range chart
@@ -139,38 +128,38 @@ $ag-theme-uitk-params: (
   //
 
   // Draw borders around most UI elements
-  borders: false,// true,
+  borders: false,
 
   // Draw the few borders that are critical to UX, e.g. between headers and rows.
-  borders-critical: true,// ag-derived(borders),
+  borders-critical: true,
 
   // Draw decorative borders separating UI elements within components
-  borders-secondary: ag-derived(borders),
+  borders-secondary: true,
 
   // Draw borders around sidebar tabs so that the active tab appears connected to the current tool panel
-  borders-side-button: ag-derived(borders),
+  borders-side-button: true,
 
   side-bar-panel-width: 200px,
 
   border-radius: 0px,
 
   // Colour for border around major UI components like the grid itself, headers, footers and tool panels
-  border-color: var(--uitk-color-grey-90), // ag-derived(background-color, $mix: foreground-color 25%),
+  border-color: var(--uitk-color-grey-90),
 
   // Colour for borders used to separate elements within a major UI component
   secondary-border-color: var(--uitk-color-purple-400), // TODO do we need this?
 
   // Colour of the border between grid rows, or null to display no border
-  row-border-color: var(--uitk-ag-row-border-color), //ag-derived(secondary-border-color),
+  row-border-color: var(--uitk-ag-row-border-color),
 
   // Default border for cells. This can be used to specify the border-style and border-color properties e.g. `dashed red` but the border-width is fixed at 1px.
   cell-horizontal-border: solid transparent,
 
   // Separator between columns in the header. Displays between all header cells For best UX, use either this or header-column-resize-handle but not both
   header-column-separator: true,
-  header-column-separator-height: 18px, //100% - 4px,
+  header-column-separator-height: 18px,
   header-column-separator-width: 1px,
-  header-column-separator-color: var(--uitk-ag-header-column-separator-color), // ag-derived(border-color, $opacity: 0.5),
+  header-column-separator-color: var(--uitk-ag-header-column-separator-color),
 
   // Visible marker for resizeable columns. Displays in the same position as the column separator, but only when the column is resizeable. For best UX, use either this or header-column-separator but not both
   header-column-resize-handle: false,
@@ -215,7 +204,6 @@ $ag-theme-uitk-params: (
   // Color of dot representing selected page of chart styles
   minichart-selected-page-color: ag-derived(checkbox-checked-color),
 
-
   //
   // SIZING / PADDING / SPACING
   //
@@ -239,10 +227,10 @@ $ag-theme-uitk-params: (
   cell-widget-spacing: ag-derived(cell-horizontal-padding),
 
   // Height of grid rows
-  row-height: 24px, // var(--uitk-ag-row-height),
+  row-height: 24px,
 
   // Height of header rows
-  header-height: 24px, // var(--uitk-ag-row-height),
+  header-height: 24px,
 
   // Height of items in lists (example of lists are dropdown select inputs and column menu set filters)
   list-item-height: ag-derived(grid-size, $times: 5),
@@ -280,20 +268,20 @@ $ag-theme-uitk-params: (
   popup-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3),
 );
 
-$ag-theme-uitk-params-medium: ag-process-theme-variables((
-  row-height: 36, // var(--uitk-ag-row-height),
-  header-height: 36, // var(--uitk-ag-row-height),
-), $ag-theme-uitk-params);
+$ag-theme-uitk-params-medium: map-merge($ag-theme-uitk-params, (
+  row-height: 36,
+  header-height: 36,
+));
 
-$ag-theme-uitk-params-low: ag-process-theme-variables((
-  row-height: 48, // var(--uitk-ag-row-height),
-  header-height: 48, // var(--uitk-ag-row-height),
-), $ag-theme-uitk-params);
+$ag-theme-uitk-params-low: map-merge($ag-theme-uitk-params, (
+  row-height: 48,
+  header-height: 48,
+));
 
-$ag-theme-uitk-params-touch: ag-process-theme-variables((
-  row-height: 60, // var(--uitk-ag-row-height),
-  header-height: 60, // var(--uitk-ag-row-height),
-), $ag-theme-uitk-params);
+$ag-theme-uitk-params-touch: map-merge($ag-theme-uitk-params, (
+  row-height: 60,
+  header-height: 60,
+));
 
 .ag-theme-uitk-high {
   @include ag-theme-alpine($ag-theme-uitk-params);

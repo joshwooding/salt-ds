@@ -1,63 +1,48 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@jpmorganchase/uitk-core";
-
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
+import "../../uitk-ag-theme.css";
 import changeDetectionExampleColumns from "../dependencies/changeDetectionExampleColumns";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { GridApi, GridReadyEvent, RowNode } from "ag-grid-community";
+import { GridApi, RowNode } from "ag-grid-community";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 const ChangeDetectionExample = function ChangeDetectionExample(
   props: AgGridReactProps
 ) {
-  const [isGridReady, setGridReady] = useState(false);
-
-  const gridApiRef = useRef<GridApi>();
+  const { agGridProps, containerProps, api, isGridReady } = useAgGridHelpers();
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current?.sizeColumnsToFit();
+      api?.sizeColumnsToFit();
     }
   }, [isGridReady]);
 
-  const onGridReady = (event: GridReadyEvent) => {
-    gridApiRef.current = event.api;
-    setGridReady(true);
-  };
-
   const updateOneRecord = () => {
-    const rowNodeToUpdate = pickExistingRowNodeAtRandom(gridApiRef.current!);
+    const rowNodeToUpdate = pickExistingRowNodeAtRandom(api!);
     const randomValue = createRandomNumber();
     const randomColumnId = pickRandomColumn();
     rowNodeToUpdate?.setDataValue(randomColumnId, randomValue);
   };
 
   const updateUsingTransaction = () => {
-    const itemToUpdate = pickExistingRowItemAtRandom(gridApiRef.current!);
+    const itemToUpdate = pickExistingRowItemAtRandom(api!);
     if (!itemToUpdate) {
       return;
     }
     itemToUpdate[pickRandomColumn()] = createRandomNumber();
     itemToUpdate[pickRandomColumn()] = createRandomNumber();
     const transaction = { update: [itemToUpdate] };
-    gridApiRef.current?.updateRowData(transaction);
+    api?.updateRowData(transaction);
   };
 
   const removeUsingTransaction = () => {
-    const itemToRemove = pickExistingRowItemAtRandom(gridApiRef.current!);
+    const itemToRemove = pickExistingRowItemAtRandom(api!);
     if (!itemToRemove) {
       return;
     }
     const transaction = { remove: [itemToRemove] };
     console.log("removing", itemToRemove);
-    gridApiRef.current?.updateRowData(transaction);
+    api?.updateRowData(transaction);
   };
 
   const addUsingTransaction = () => {
@@ -67,22 +52,22 @@ const ChangeDetectionExample = function ChangeDetectionExample(
     const newItem = createRowItem(i, j, k);
     const transaction = { add: [newItem] };
     console.log("adding", newItem);
-    gridApiRef.current?.updateRowData(transaction);
+    api?.updateRowData(transaction);
   };
 
   const changeGroupUsingTransaction = () => {
-    const itemToUpdate = pickExistingRowItemAtRandom(gridApiRef.current!);
+    const itemToUpdate = pickExistingRowItemAtRandom(api!);
     if (!itemToUpdate) {
       return;
     }
     itemToUpdate.topGroup = itemToUpdate.topGroup === "Top" ? "Bottom" : "Top";
     const transaction = { update: [itemToUpdate] };
     console.log("updating", itemToUpdate);
-    gridApiRef.current?.updateRowData(transaction);
+    api?.updateRowData(transaction);
   };
 
   return (
-    <div style={{ marginTop: 25 }}>
+    <div>
       <Button onClick={updateOneRecord}>Update One Value</Button>
       &nbsp;
       <Button onClick={updateUsingTransaction}>Update Using Transaction</Button>
@@ -94,13 +79,18 @@ const ChangeDetectionExample = function ChangeDetectionExample(
       <Button onClick={changeGroupUsingTransaction}>
         Change Group Using Transaction
       </Button>
-      <AgGridReact
-        animateRows
-        enableCellChangeFlash
-        onGridReady={onGridReady}
-        suppressAggFuncInHeader
-        {...props}
-      />
+      <div
+        style={{ marginTop: 25, height: 800, width: 800 }}
+        {...containerProps}
+      >
+        <AgGridReact
+          animateRows
+          enableCellChangeFlash
+          suppressAggFuncInHeader
+          {...agGridProps}
+          {...props}
+        />
+      </div>
     </div>
   );
 };

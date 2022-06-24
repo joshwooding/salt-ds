@@ -1,18 +1,10 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import "../../uitk-ag-theme.css";
 import RatingDropdown from "./RatingDropdown";
-/**
- * Example data can be found here
- * https://bitbucketdc.jpmchase.net/projects/JPMUITK/repos/jpm-ui-toolkit/browse/packages/data-grid/examples/dependencies
- */
 import dataGridExampleData from "../dependencies/dataGridExampleData";
-
-// ideally these css files would be loaded from a link tag
-// pointing to static asset directory for caching
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
+import { ColDef } from "ag-grid-community";
+import { useAgGridHelpers } from "../dependencies/useAgGridHelpers";
 
 /**
  * Based on the examples provided by
@@ -23,7 +15,7 @@ import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 const CellDropdownEditorExample = function CellDropdownEditorExample(
   props: AgGridReactProps
 ) {
-  const [columnDefs, setColumnDefs] = useState<ColDef[]>([
+  const [columnDefs] = useState<ColDef[]>([
     { headerName: "Name", field: "name" },
     { headerName: "Code", field: "code", minWidth: 120 },
     { headerName: "Capital", field: "capital" },
@@ -37,34 +29,30 @@ const CellDropdownEditorExample = function CellDropdownEditorExample(
       width: 100,
     },
   ]);
-  const [isGridReady, setGridReady] = useState<boolean>(false);
-  const [rowData, setRowData] = useState(dataGridExampleData);
 
-  const gridApiRef = useRef<GridApi>();
+  const { isGridReady, agGridProps, containerProps, api } = useAgGridHelpers();
+  const [rowData] = useState(dataGridExampleData);
 
   useEffect(() => {
     if (isGridReady) {
-      gridApiRef.current?.sizeColumnsToFit();
+      api?.sizeColumnsToFit();
     }
   }, [isGridReady]);
 
-  const onGridReady = (event: GridReadyEvent) => {
-    gridApiRef.current = event.api;
-    setGridReady(true);
-  };
-
   const onBodyScroll = () => {
-    gridApiRef.current?.stopEditing();
+    api?.stopEditing();
   };
 
   return (
-    <AgGridReact
-      columnDefs={columnDefs}
-      onBodyScroll={onBodyScroll}
-      onGridReady={onGridReady}
-      {...props}
-      rowData={rowData}
-    />
+    <div style={{ height: 800, width: 800 }} {...containerProps}>
+      <AgGridReact
+        columnDefs={columnDefs}
+        onBodyScroll={onBodyScroll}
+        {...agGridProps}
+        {...props}
+        rowData={rowData}
+      />
+    </div>
   );
 };
 

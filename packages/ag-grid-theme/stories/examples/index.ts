@@ -18,7 +18,7 @@ export { default as NoDataOverlay } from "./NoDataOverlay";
 export { default as InfiniteScroll } from "./InfiniteScroll";
 export { default as PinnedRows } from "./PinnedRows";
 export { default as Pagination } from "./Pagination";
-export { default as CustomPagination } from "./CustomPagination";
+// export { default as CustomPagination } from "./CustomPagination";
 export { default as ParentChildRows } from "./ParentChildRows";
 export { default as PivotingColumns } from "./PivotingColumns";
 export { default as RefreshGridContent } from "./RefreshGridContent";
