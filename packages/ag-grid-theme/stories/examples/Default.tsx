@@ -2,7 +2,7 @@ import { GridApi, GridReadyEvent } from "ag-grid-community";
 import React, { useEffect, useRef, useState } from "react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import "../../index.css";
+import "../../uitk-ag-theme-high.css";
 
 /**
  * Example data can be found here
