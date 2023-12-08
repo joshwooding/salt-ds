@@ -1,5 +1,11 @@
 # @salt-ds/core
 
+## 1.13.2
+
+### Patch Changes
+
+- d6e2e2c1: Fixed nested Salt Providers not inheriting a parent provider's `enableStyleInjection` value.
+
 ## 1.13.1
 
 ### Patch Changes

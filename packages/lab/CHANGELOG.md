@@ -1,5 +1,11 @@
 # @salt-ds/lab
 
+## 1.0.0-alpha.24
+
+### Patch Changes
+
+- 7e352933: Removed left and right padding from TabstripNext for the inline variant.
+
 ## 1.0.0-alpha.23
 
 ### Patch Changes
