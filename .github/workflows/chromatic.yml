@@ -44,5 +44,6 @@ jobs:
           ignoreLastBuildOnBranch: "!(main)**"
           traceChanged: "expanded"
           storybookBuildDir: "./storybook-static"
+          debug: true
         env:
           CHROMATIC_PULL_REQUEST_SHA: ${{ github.event.workflow_run.head_commit.id }}
