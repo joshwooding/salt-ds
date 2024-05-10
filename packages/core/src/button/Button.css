@@ -1,6 +1,6 @@
 /* Styles applied to the root element if variant="cta" */
 .saltButton-cta {
-  --button-background: red;
+  --button-background: green;
   --button-background-active: var(--salt-actionable-cta-background-active);
   --button-background-disabled: var(--salt-actionable-cta-background-disabled);
   --button-background-hover: var(--salt-actionable-cta-background-hover);
