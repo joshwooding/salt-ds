@@ -71,8 +71,8 @@ jobs:
             repo: context.repo.repo,
             sha: "${{ github.event.workflow_run.head_commit.id }}",
             state: "sucesss",
-            description: "Deployed Storybook to Cloudflare Pages",
-            context: "cloudflare-storybook-deploy"
+            description: "Successsfully deployed",
+            context: "Storybook"
             target_url: "${{ steps.publish.outputs.url }}"
             });
 
@@ -85,8 +85,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             sha: "${{ github.event.workflow_run.head_commit.id }}",
-            state: "sucesss",
-            description: "Deployed Storybook to Cloudflare Pages",
-            context: "cloudflare-storybook-deploy"
-            target_url: "${{ steps.publish.outputs.url }}"
+            state: "error",
+            description: "Failed to deploy",
+            context: "Storybook"
             });
