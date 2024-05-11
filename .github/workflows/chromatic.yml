@@ -46,4 +46,6 @@ jobs:
           storybookBuildDir: "./storybook-static"
           debug: true
         env:
-          CHROMATIC_PULL_REQUEST_SHA: ${{ github.event.workflow_run.head_commit.id }}
+          CHROMATIC_BRANCH: ${{ github.event.workflow_run.head_repository.owner.login }}:${{ github.event.workflow_run.head_branch }}
+          CHROMATIC_SHA: ${{ github.event.workflow_run.head_sha }}
+          CHROMATIC_SLUG: ${{ github.event.workflow_run.head_repository.full_name }}
