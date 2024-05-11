@@ -22,7 +22,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: "${{ github.event.workflow_run.head_commit.id }}",
@@ -66,7 +66,7 @@ jobs:
         if: success() && github.event.workflow_run.event == 'pull_request'
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
             sha: "${{ github.event.workflow_run.head_commit.id }}",
@@ -81,7 +81,7 @@ jobs:
         if: failure() && github.event.workflow_run.event == 'pull_request'
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
             sha: "${{ github.event.workflow_run.head_commit.id }}",
