@@ -29,18 +29,7 @@ jobs:
           path: ./storybook-static
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-      - name: Publish to Chromatic
-        uses: chromaui/action@v1
-        # Chromatic GitHub Action options
-        with:
-          # 👇 Chromatic projectToken, refer to the manage page to obtain it.
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          exitOnceUploaded: true
-          # Turbosnap if this is not the main branch
-          onlyChanged: true
-          externals: "packages/(theme|ag-grid-theme)/**"
-          skip: "changeset-release/*"
-          autoAcceptChanges: "main"
-          ignoreLastBuildOnBranch: "!(main)**"
-          traceChanged: "expanded"
-          storybookBuildDir: "./storybook-static"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
