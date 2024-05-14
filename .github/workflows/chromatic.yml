@@ -33,6 +33,11 @@ jobs:
         id: chromatic_branch
         with:
           script: |
+            if(github.event.workflow_run.event !== "pull_request") {
+              console.log(github.event.workflow_run.head_branch);
+              return;
+            }
+
             const { data:pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
