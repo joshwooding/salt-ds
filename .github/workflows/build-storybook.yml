@@ -18,3 +18,5 @@ jobs:
           cache: "yarn"
       - name: Install dependencies
         run: yarn
+        env:
+          ART_NAME: "${{github.event.number || github.ref_name}}"
