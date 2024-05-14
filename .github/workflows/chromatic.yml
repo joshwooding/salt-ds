@@ -38,4 +38,4 @@ jobs:
             console.log("branchName", branchName);
 
             const draft = fs.readFileSync('./METADATA/draft', 'utf8');
-            console.log("draft", draft == true);
+            console.log("draft", draft, typeof draft, Boolean(draft));
