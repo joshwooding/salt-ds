@@ -37,5 +37,5 @@ jobs:
             const branchName = fs.readFileSync('./METADATA/branch-name', 'utf8');
             console.log("branchName", branchName);
 
-            const branchName = fs.readFileSync('./METADATA/draft', 'utf8');
-            console.log("draft", branchName);
+            const draft = fs.readFileSync('./METADATA/draft', 'utf8');
+            console.log("draft", draft);
