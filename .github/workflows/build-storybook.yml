@@ -16,7 +16,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - name: Save Chromatic branch name
-             - name: Save branch metadata for Chromatic
+      - name: Save branch metadata for Chromatic
         run: |
           mkdir METADATA
           echo $BRANCH_NAME > ./METADATA/branch-name
