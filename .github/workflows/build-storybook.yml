@@ -16,7 +16,14 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
-      - name: Install dependencies
-        run: yarn
+      - name: Save Chromatic branch name
+        run: |
+          mkdir METADATA
+          echo $BRANCH_NAME > ./METADATA/branch-name
         env:
-          ART_NAME: "${{github.event.number || github.ref_name}}"
+          BRANCH_NAME: ${{ github.event.number || github.ref_name }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: metadata
+          path: ./METADATA
+          retention-days: 1
