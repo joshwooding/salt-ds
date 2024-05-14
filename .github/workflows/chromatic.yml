@@ -34,8 +34,8 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const branchName = fs.readFileSync('./METADATA/branch-name', 'utf8');
+            const branchName = fs.readFileSync('./METADATA/branch-name', 'utf8').trim();
             console.log("branchName", branchName);
 
-            const draft = fs.readFileSync('./METADATA/draft', 'utf8');
-            console.log("draft", draft, typeof draft, Boolean(draft));
+            const draft = fs.readFileSync('./METADATA/draft', 'utf8').trim();
+            console.log("draft", draft, typeof draft, Boolean(draft), draft === "true");
