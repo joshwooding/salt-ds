@@ -11,11 +11,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "yarn"
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -25,7 +20,7 @@ jobs:
           mkdir METADATA
           echo $BRANCH_NAME > ./METADATA/branch-name
         env:
-          BRANCH_NAME: ${{ github.event.pull_request.head.fork && github.event.pull_request.head.label || github.ref_name }}
+          BRANCH_NAME: ${{ github.event.pull_request.head.fork == 'true' && github.event.pull_request.head.label || github.ref_name }}
       - uses: actions/upload-artifact@v3
         with:
           name: metadata
