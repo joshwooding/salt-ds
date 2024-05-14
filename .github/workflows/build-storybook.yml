@@ -21,7 +21,7 @@ jobs:
           echo $BRANCH_NAME > ./METADATA/branch-name
         env:
           FORK: ${{ github.event.pull_request.head.repo.fork }}
-          BRANCH_NAME: ${{ github.event.pull_request.head.repo.fork == true && github.event.pull_request.head.label || github.ref_name }}
+          BRANCH_NAME: ${{ github.event.pull_request.head.repo.fork && github.event.pull_request.head.label || github.ref_name }}
       - uses: actions/upload-artifact@v3
         with:
           name: metadata
