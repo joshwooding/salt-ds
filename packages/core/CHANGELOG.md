@@ -1,5 +1,13 @@
 # @salt-ds/core
 
+## 1.27.1
+
+### Patch Changes
+
+- 88961433: Changed RadioButton's display to `inline-flex` so the hit area only covers the label.
+- d972d206: Fixed `Tooltip` not displaying when the `content` prop value is falsy e.g. 0
+- 88961433: Changed Checkbox's display to `inline-flex` so the hit area only covers the label.
+
 ## 1.27.0
 
 ### Minor Changes

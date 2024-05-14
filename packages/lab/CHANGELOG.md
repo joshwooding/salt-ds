@@ -1,5 +1,12 @@
 # @salt-ds/lab
 
+## 1.0.0-alpha.44
+
+### Patch Changes
+
+- 92bb63a1: - fixed keyboard navigation between panel and dates in calendar
+  - fixed highlight and today characteristics for previous months in calendar
+
 ## 1.0.0-alpha.43
 
 ### Minor Changes
