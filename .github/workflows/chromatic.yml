@@ -33,8 +33,8 @@ jobs:
         id: chromatic_branch
         with:
           script: |
-            if(github.event.workflow_run.event !== "pull_request") {
-              console.log(github.event.workflow_run.head_branch);
+            if("${{github.event.workflow_run.event}}" !== "pull_request") {
+              console.log("branch", "${{github.event.workflow_run.head_branch}}");
               return;
             }
 
@@ -46,4 +46,4 @@ jobs:
 
             const label = pr.head.repo.fork ? pr.head.label : pr.head.ref;
 
-            console.log(label);
+            console.log("branch", label);
