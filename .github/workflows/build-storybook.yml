@@ -20,6 +20,7 @@ jobs:
           mkdir METADATA
           echo $BRANCH_NAME > ./METADATA/branch-name
         env:
+          FORK: $${{ github.event.pull_request.head.fork }}
           BRANCH_NAME: ${{ github.event.pull_request.head.fork == true && github.event.pull_request.head.label || github.ref_name }}
       - uses: actions/upload-artifact@v3
         with:
