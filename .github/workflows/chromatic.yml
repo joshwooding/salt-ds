@@ -33,11 +33,6 @@ jobs:
         id: chromatic_branch
         with:
           script: |
-            if("${{github.event.workflow_run.event}}" !== "pull_request") {
-              console.log("branchName", "${{github.event.workflow_run.head_branch}}");
-              return;
-            }
-
             const fs = require('fs');
             const branchName = fs.readFileSync('./METADATA/branch-name', 'utf8');
 
